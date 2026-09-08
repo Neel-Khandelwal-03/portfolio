@@ -46,3 +46,7 @@ next-env.d.ts
 
 # drizzle scratch
 /drizzle/meta/_journal.json.bak
+
+# Claude Code artifacts
+skills-lock.json
+.claude/
