@@ -9,10 +9,7 @@ import { loginSchema } from "@/lib/validation";
 
 export type LoginState = { error?: string; fieldErrors?: Record<string, string> };
 
-export async function loginAction(
-  _previous: LoginState,
-  formData: FormData,
-): Promise<LoginState> {
+export async function loginAction(_previous: LoginState, formData: FormData): Promise<LoginState> {
   const parsed = loginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password"),

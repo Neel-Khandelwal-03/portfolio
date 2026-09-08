@@ -9,11 +9,7 @@ import { ArrowLeftIcon, ExternalLinkIcon } from "@/components/ui/icons";
 import { formatTimestamp } from "@/lib/utils";
 import { getProjectById } from "@/services/portfolio";
 
-export default async function EditProjectPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const projectId = Number(id);
   if (!Number.isInteger(projectId)) notFound();
@@ -25,7 +21,7 @@ export default async function EditProjectPage({
     <>
       <Link
         href="/admin/projects"
-        className="mb-4 inline-flex items-center gap-2 text-[13px] font-medium text-fg-muted hover:text-fg"
+        className="text-fg-muted hover:text-fg mb-4 inline-flex items-center gap-2 text-[13px] font-medium"
       >
         <ArrowLeftIcon width={14} height={14} />
         All projects
@@ -40,7 +36,7 @@ export default async function EditProjectPage({
               <Link
                 href={`/projects/${project.slug}`}
                 target="_blank"
-                className="inline-flex h-10 items-center gap-2 rounded-lg border border-border-base px-3 text-[13px] font-medium hover:bg-bg-subtle"
+                className="border-border-base hover:bg-bg-subtle inline-flex h-10 items-center gap-2 rounded-lg border px-3 text-[13px] font-medium"
               >
                 <ExternalLinkIcon width={14} height={14} />
                 View live

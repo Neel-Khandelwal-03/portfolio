@@ -66,11 +66,12 @@ async function main() {
     screenshots: [{ url: "/x.png", caption: "shot" }],
   });
   check("update persists", updated?.title.endsWith("(edited)") === true, updated?.title);
-  check("jsonb write round-trips", updated?.screenshots[0]?.caption === "shot", updated?.screenshots);
   check(
-    "updatedAt advances",
-    (updated?.updatedAt.getTime() ?? 0) >= created.updatedAt.getTime(),
+    "jsonb write round-trips",
+    updated?.screenshots[0]?.caption === "shot",
+    updated?.screenshots,
   );
+  check("updatedAt advances", (updated?.updatedAt.getTime() ?? 0) >= created.updatedAt.getTime());
 
   const byId = await svc.getProjectById(created.id);
   check("read back by id", byId?.id === created.id);

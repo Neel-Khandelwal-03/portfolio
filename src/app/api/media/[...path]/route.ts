@@ -12,10 +12,7 @@ export const runtime = "nodejs";
  * hit for those. Path traversal is rejected inside `readLocalFile`, and only
  * extensions on the upload allowlist resolve to a content type.
  */
-export async function GET(
-  _request: Request,
-  { params }: { params: Promise<{ path: string[] }> },
-) {
+export async function GET(_request: Request, { params }: { params: Promise<{ path: string[] }> }) {
   const { path: segments } = await params;
   const file = await readLocalFile(segments);
 

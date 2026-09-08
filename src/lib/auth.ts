@@ -83,8 +83,7 @@ export async function login(email: string, password: string): Promise<LoginResul
   // Always run a verification, even when the account does not exist, so the
   // response time does not reveal which emails are registered.
   const stored =
-    user?.passwordHash ??
-    "scrypt$16384$8$1$00000000000000000000000000000000$" + "0".repeat(128);
+    user?.passwordHash ?? "scrypt$16384$8$1$00000000000000000000000000000000$" + "0".repeat(128);
 
   const valid = await verifyPassword(password, stored);
 
@@ -98,10 +97,7 @@ export async function login(email: string, password: string): Promise<LoginResul
   const token = await createSession(user.id, headerList.get("user-agent"));
   await setSessionCookie(token);
 
-  await db
-    .update(adminUsers)
-    .set({ lastLoginAt: new Date() })
-    .where(eq(adminUsers.id, user.id));
+  await db.update(adminUsers).set({ lastLoginAt: new Date() }).where(eq(adminUsers.id, user.id));
 
   return { ok: true };
 }

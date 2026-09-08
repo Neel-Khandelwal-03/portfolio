@@ -86,9 +86,7 @@ async function readSettings(): Promise<t.SiteSettings> {
 export const getSiteSettings = cachedQuery(readSettings, ["site-settings"], [TAGS.settings]);
 export const getSiteSettingsForAdmin = readSettings;
 
-export async function updateSiteSettings(
-  values: Partial<t.SiteSettings>,
-): Promise<t.SiteSettings> {
+export async function updateSiteSettings(values: Partial<t.SiteSettings>): Promise<t.SiteSettings> {
   const [row] = await db
     .insert(t.siteSettings)
     .values({ ...DEFAULT_SETTINGS, ...values, id: 1 })
@@ -167,10 +165,7 @@ export async function updateSkillCategory(
 }
 
 export async function deleteSkillCategory(id: number) {
-  const [row] = await db
-    .delete(t.skillCategories)
-    .where(eq(t.skillCategories.id, id))
-    .returning();
+  const [row] = await db.delete(t.skillCategories).where(eq(t.skillCategories.id, id)).returning();
   return row ?? null;
 }
 
@@ -247,10 +242,7 @@ export const getPublishedProjectSlugs = cachedQuery(
 );
 
 export function listProjectsForAdmin() {
-  return db
-    .select()
-    .from(t.projects)
-    .orderBy(asc(t.projects.displayOrder), desc(t.projects.id));
+  return db.select().from(t.projects).orderBy(asc(t.projects.displayOrder), desc(t.projects.id));
 }
 
 export async function getProjectById(id: number) {
@@ -276,10 +268,7 @@ export async function createProject(values: typeof t.projects.$inferInsert) {
   return row;
 }
 
-export async function updateProject(
-  id: number,
-  values: Partial<typeof t.projects.$inferInsert>,
-) {
+export async function updateProject(id: number, values: Partial<typeof t.projects.$inferInsert>) {
   const [row] = await db
     .update(t.projects)
     .set({ ...values, updatedAt: new Date() })
@@ -348,10 +337,7 @@ export async function deleteExperience(id: number) {
 
 export const getEducation = cachedQuery(
   async () =>
-    db
-      .select()
-      .from(t.education)
-      .orderBy(asc(t.education.displayOrder), desc(t.education.endDate)),
+    db.select().from(t.education).orderBy(asc(t.education.displayOrder), desc(t.education.endDate)),
   ["education"],
   [TAGS.education],
 );

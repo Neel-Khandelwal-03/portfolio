@@ -73,7 +73,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <head>
         <ThemeScript />
       </head>
-      <body className="min-h-dvh bg-bg text-fg antialiased">{children}</body>
+      <body className="bg-bg text-fg min-h-dvh antialiased">{children}</body>
     </html>
   );
 }

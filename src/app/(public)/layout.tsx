@@ -27,7 +27,7 @@ export default async function PublicLayout({ children }: { children: ReactNode }
     <div className="flex min-h-dvh flex-col">
       <a
         href="#main"
-        className="sr-only z-[60] focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:rounded-lg focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-accent-fg"
+        className="focus:bg-accent focus:text-accent-fg sr-only z-[60] focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:rounded-lg focus:px-4 focus:py-2 focus:text-sm focus:font-medium"
       >
         Skip to content
       </a>

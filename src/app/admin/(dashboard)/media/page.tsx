@@ -26,7 +26,7 @@ export default async function MediaAdminPage() {
           {files.map((file) => (
             <li
               key={file.id}
-              className="flex flex-col rounded-xl border border-border-base bg-bg-raised p-4"
+              className="border-border-base bg-bg-raised flex flex-col rounded-xl border p-4"
             >
               {file.kind === "image" ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
@@ -34,10 +34,10 @@ export default async function MediaAdminPage() {
                   src={file.url}
                   alt=""
                   loading="lazy"
-                  className="mb-3 h-32 w-full rounded-lg border border-border-base bg-bg-subtle object-contain"
+                  className="border-border-base bg-bg-subtle mb-3 h-32 w-full rounded-lg border object-contain"
                 />
               ) : (
-                <div className="mb-3 grid h-32 w-full place-items-center rounded-lg border border-border-base bg-bg-subtle font-mono text-xs text-fg-subtle">
+                <div className="border-border-base bg-bg-subtle text-fg-subtle mb-3 grid h-32 w-full place-items-center rounded-lg border font-mono text-xs">
                   PDF
                 </div>
               )}
@@ -45,16 +45,16 @@ export default async function MediaAdminPage() {
               <p className="truncate text-[13px] font-medium" title={file.originalName}>
                 {file.originalName}
               </p>
-              <p className="mt-1 text-[12px] text-fg-subtle">
+              <p className="text-fg-subtle mt-1 text-[12px]">
                 {formatBytes(file.size)} · {formatTimestamp(file.createdAt)}
               </p>
 
-              <div className="mt-3 flex items-center justify-between gap-2 border-t border-border-base pt-3">
+              <div className="border-border-base mt-3 flex items-center justify-between gap-2 border-t pt-3">
                 <a
                   href={file.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[13px] font-medium text-accent hover:underline"
+                  className="text-accent text-[13px] font-medium hover:underline"
                 >
                   Open
                 </a>

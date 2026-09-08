@@ -23,14 +23,14 @@ export default async function ProjectsIndexPage() {
       <Container>
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-[13px] font-medium text-fg-muted hover:text-fg"
+          className="text-fg-muted hover:text-fg inline-flex items-center gap-2 text-[13px] font-medium"
         >
           <ArrowLeftIcon width={14} height={14} />
           Back to portfolio
         </Link>
 
         <h1 className="mt-6 text-3xl font-semibold tracking-tight sm:text-4xl">All projects</h1>
-        <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-fg-muted">
+        <p className="text-fg-muted mt-3 max-w-2xl text-[15px] leading-relaxed">
           {projects.length === 0
             ? "Nothing published yet."
             : `${projects.length} published ${projects.length === 1 ? "project" : "projects"}, newest ordering first.`}
@@ -49,7 +49,7 @@ export default async function ProjectsIndexPage() {
               <section key={category} aria-labelledby={`cat-${category}`}>
                 <h2
                   id={`cat-${category}`}
-                  className="font-mono text-[11px] font-semibold tracking-[0.16em] text-fg-subtle uppercase"
+                  className="text-fg-subtle font-mono text-[11px] font-semibold tracking-[0.16em] uppercase"
                 >
                   {category}
                 </h2>

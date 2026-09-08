@@ -100,7 +100,7 @@ export function ProjectForm({ project }: { project?: Project }) {
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label htmlFor="category" className="mb-1.5 block text-[13px] font-medium">
-                Category<span className="ml-1 text-danger">*</span>
+                Category<span className="text-danger ml-1">*</span>
               </label>
               <input
                 id="category"
@@ -109,7 +109,7 @@ export function ProjectForm({ project }: { project?: Project }) {
                 required
                 defaultValue={project?.category ?? "Full-Stack"}
                 aria-invalid={Boolean(errors.category)}
-                className="w-full rounded-lg border border-border-base bg-bg px-3 py-2 text-sm focus:border-accent focus:outline-none aria-[invalid=true]:border-danger"
+                className="border-border-base bg-bg focus:border-accent aria-[invalid=true]:border-danger w-full rounded-lg border px-3 py-2 text-sm focus:outline-none"
               />
               <datalist id="project-categories">
                 {CATEGORIES.map((category) => (
@@ -117,9 +117,9 @@ export function ProjectForm({ project }: { project?: Project }) {
                 ))}
               </datalist>
               {errors.category ? (
-                <p className="mt-1.5 text-[13px] text-danger">{errors.category}</p>
+                <p className="text-danger mt-1.5 text-[13px]">{errors.category}</p>
               ) : (
-                <p className="mt-1.5 text-[13px] text-fg-subtle">
+                <p className="text-fg-subtle mt-1.5 text-[13px]">
                   Pick from the list or type your own.
                 </p>
               )}
@@ -216,7 +216,7 @@ export function ProjectForm({ project }: { project?: Project }) {
         <SubmitButton>{project ? "Save project" : "Create project"}</SubmitButton>
         <Link
           href="/admin/projects"
-          className="inline-flex h-10 items-center rounded-lg border border-border-base px-4 text-sm font-medium hover:bg-bg-subtle"
+          className="border-border-base hover:bg-bg-subtle inline-flex h-10 items-center rounded-lg border px-4 text-sm font-medium"
         >
           Cancel
         </Link>
@@ -270,13 +270,13 @@ function ScreenshotsField({ defaultValue }: { defaultValue: Screenshot[] }) {
           {items.map((item, index) => (
             <li
               key={`${item.url}-${index}`}
-              className="flex items-center gap-3 rounded-lg border border-border-base bg-bg p-2"
+              className="border-border-base bg-bg flex items-center gap-3 rounded-lg border p-2"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={item.url}
                 alt=""
-                className="h-12 w-16 shrink-0 rounded border border-border-base object-cover"
+                className="border-border-base h-12 w-16 shrink-0 rounded border object-cover"
               />
               <input
                 type="text"
@@ -290,13 +290,13 @@ function ScreenshotsField({ defaultValue }: { defaultValue: Screenshot[] }) {
                     ),
                   )
                 }
-                className="min-w-0 flex-1 rounded-md border border-border-base bg-bg px-2.5 py-1.5 text-[13px] focus:border-accent focus:outline-none"
+                className="border-border-base bg-bg focus:border-accent min-w-0 flex-1 rounded-md border px-2.5 py-1.5 text-[13px] focus:outline-none"
               />
               <button
                 type="button"
                 onClick={() => setItems((current) => current.filter((_, i) => i !== index))}
                 aria-label={`Remove screenshot ${index + 1}`}
-                className="shrink-0 rounded-md px-2 py-1 text-[13px] font-medium text-danger hover:bg-danger-soft"
+                className="text-danger hover:bg-danger-soft shrink-0 rounded-md px-2 py-1 text-[13px] font-medium"
               >
                 Remove
               </button>
@@ -305,7 +305,7 @@ function ScreenshotsField({ defaultValue }: { defaultValue: Screenshot[] }) {
         </ul>
       ) : null}
 
-      <label className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-lg border border-border-base bg-bg px-3 text-[13px] font-medium hover:border-border-strong hover:bg-bg-subtle">
+      <label className="border-border-base bg-bg hover:border-border-strong hover:bg-bg-subtle inline-flex h-9 cursor-pointer items-center gap-2 rounded-lg border px-3 text-[13px] font-medium">
         {busy ? "Uploading…" : "Add screenshot"}
         <input
           type="file"
@@ -315,7 +315,9 @@ function ScreenshotsField({ defaultValue }: { defaultValue: Screenshot[] }) {
           className="sr-only"
         />
       </label>
-      <p className="mt-1.5 text-[13px] text-fg-subtle">Up to 12 images, shown on the detail page.</p>
+      <p className="text-fg-subtle mt-1.5 text-[13px]">
+        Up to 12 images, shown on the detail page.
+      </p>
     </div>
   );
 }

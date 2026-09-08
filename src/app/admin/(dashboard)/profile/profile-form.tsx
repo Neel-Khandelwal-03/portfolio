@@ -129,9 +129,7 @@ export function ProfileForm({ profile }: { profile: Profile }) {
 
       <div className="flex items-center gap-3">
         <SubmitButton>Save profile</SubmitButton>
-        <p className="text-[13px] text-fg-subtle">
-          Saving updates the public site immediately.
-        </p>
+        <p className="text-fg-subtle text-[13px]">Saving updates the public site immediately.</p>
       </div>
     </form>
   );

@@ -63,7 +63,7 @@ function NewLinkForm() {
   useActionToast(state);
 
   return (
-    <form action={formAction} className="rounded-xl border border-border-base bg-bg-raised p-5">
+    <form action={formAction} className="border-border-base bg-bg-raised rounded-xl border p-5">
       <h2 className="text-sm font-semibold">Add a link</h2>
 
       <div className="mt-4 space-y-3">
@@ -103,10 +103,10 @@ function NewLinkForm() {
         </div>
 
         {state.fieldErrors?.url ? (
-          <p className="text-[13px] text-danger">{state.fieldErrors.url}</p>
+          <p className="text-danger text-[13px]">{state.fieldErrors.url}</p>
         ) : null}
         {state.fieldErrors?.label ? (
-          <p className="text-[13px] text-danger">{state.fieldErrors.label}</p>
+          <p className="text-danger text-[13px]">{state.fieldErrors.label}</p>
         ) : null}
 
         <input type="hidden" name="isVisible" value="on" />
@@ -139,7 +139,7 @@ function LinkRow({
       <li>
         <form
           action={formAction}
-          className="space-y-3 rounded-xl border border-accent bg-bg-raised p-4"
+          className="border-accent bg-bg-raised space-y-3 rounded-xl border p-4"
         >
           <input type="hidden" name="id" value={link.id} />
           <input type="hidden" name="displayOrder" value={link.displayOrder} />
@@ -181,7 +181,7 @@ function LinkRow({
           </div>
 
           {state.fieldErrors?.url ? (
-            <p className="text-[13px] text-danger">{state.fieldErrors.url}</p>
+            <p className="text-danger text-[13px]">{state.fieldErrors.url}</p>
           ) : null}
 
           <label className="flex items-center gap-2 text-[13px] font-medium">
@@ -189,7 +189,7 @@ function LinkRow({
               type="checkbox"
               name="isVisible"
               defaultChecked={link.isVisible}
-              className="h-4 w-4 rounded border-border-strong accent-[var(--accent)]"
+              className="border-border-strong h-4 w-4 rounded accent-[var(--accent)]"
             />
             Visible on the public site
           </label>
@@ -199,7 +199,7 @@ function LinkRow({
             <button
               type="button"
               onClick={() => setEditing(false)}
-              className="inline-flex h-10 items-center rounded-lg border border-border-base px-4 text-sm font-medium hover:bg-bg-subtle"
+              className="border-border-base hover:bg-bg-subtle inline-flex h-10 items-center rounded-lg border px-4 text-sm font-medium"
             >
               Cancel
             </button>
@@ -210,7 +210,7 @@ function LinkRow({
   }
 
   return (
-    <li className="flex flex-wrap items-center gap-3 rounded-xl border border-border-base bg-bg-raised p-4">
+    <li className="border-border-base bg-bg-raised flex flex-wrap items-center gap-3 rounded-xl border p-4">
       <OrderControls
         id={link.id}
         label={link.label}
@@ -218,13 +218,18 @@ function LinkRow({
         isLast={isLast}
         action={moveSocialLinkAction}
       />
-      <SocialIcon platform={link.platform} width={16} height={16} className="shrink-0 text-accent" />
+      <SocialIcon
+        platform={link.platform}
+        width={16}
+        height={16}
+        className="text-accent shrink-0"
+      />
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold">{link.label}</p>
-        <p className="truncate text-[12px] text-fg-subtle">{link.url}</p>
+        <p className="text-fg-subtle truncate text-[12px]">{link.url}</p>
       </div>
       {link.isVisible ? null : (
-        <span className="rounded border border-border-base px-1.5 py-0.5 text-[11px] text-fg-subtle">
+        <span className="border-border-base text-fg-subtle rounded border px-1.5 py-0.5 text-[11px]">
           Hidden
         </span>
       )}
@@ -233,7 +238,7 @@ function LinkRow({
           type="button"
           onClick={() => setEditing(true)}
           aria-label={`Edit ${link.label}`}
-          className="grid h-8 w-8 place-items-center rounded-lg text-fg-subtle hover:bg-bg-subtle hover:text-fg"
+          className="text-fg-subtle hover:bg-bg-subtle hover:text-fg grid h-8 w-8 place-items-center rounded-lg"
         >
           <EditIcon width={14} height={14} />
         </button>

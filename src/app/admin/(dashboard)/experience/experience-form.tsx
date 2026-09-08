@@ -176,7 +176,7 @@ export function ExperienceForm({ experience }: { experience?: Experience }) {
         <SubmitButton>{experience ? "Save experience" : "Create experience"}</SubmitButton>
         <Link
           href="/admin/experience"
-          className="inline-flex h-10 items-center rounded-lg border border-border-base px-4 text-sm font-medium hover:bg-bg-subtle"
+          className="border-border-base hover:bg-bg-subtle inline-flex h-10 items-center rounded-lg border px-4 text-sm font-medium"
         >
           Cancel
         </Link>

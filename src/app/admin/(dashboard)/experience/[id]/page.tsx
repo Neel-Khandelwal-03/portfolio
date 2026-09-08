@@ -9,11 +9,7 @@ import { ArrowLeftIcon } from "@/components/ui/icons";
 import { formatTimestamp } from "@/lib/utils";
 import { getExperienceById } from "@/services/portfolio";
 
-export default async function EditExperiencePage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
+export default async function EditExperiencePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const experienceId = Number(id);
   if (!Number.isInteger(experienceId)) notFound();
@@ -25,7 +21,7 @@ export default async function EditExperiencePage({
     <>
       <Link
         href="/admin/experience"
-        className="mb-4 inline-flex items-center gap-2 text-[13px] font-medium text-fg-muted hover:text-fg"
+        className="text-fg-muted hover:text-fg mb-4 inline-flex items-center gap-2 text-[13px] font-medium"
       >
         <ArrowLeftIcon width={14} height={14} />
         All experience

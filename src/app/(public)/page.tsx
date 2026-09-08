@@ -162,10 +162,10 @@ async function StructuredData() {
     description: profile.summary || profile.introduction || undefined,
     email: profile.email ? `mailto:${profile.email}` : undefined,
     image: profile.avatarUrl || undefined,
-    address: profile.location ? { "@type": "PostalAddress", addressLocality: profile.location } : undefined,
-    sameAs: socialLinks
-      .map((link) => link.url)
-      .filter((url) => url.startsWith("http")),
+    address: profile.location
+      ? { "@type": "PostalAddress", addressLocality: profile.location }
+      : undefined,
+    sameAs: socialLinks.map((link) => link.url).filter((url) => url.startsWith("http")),
     knowsAbout: skillGroups.flatMap((group) => group.skills.map((skill) => skill.name)),
     alumniOf: education.map((item) => ({
       "@type": "EducationalOrganization",

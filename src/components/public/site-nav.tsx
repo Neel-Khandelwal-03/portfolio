@@ -99,13 +99,16 @@ export function SiteNav({ items, name }: { items: NavItem[]; name: string }) {
         "no-print sticky top-0 z-50 border-b transition-colors duration-200",
         scrolled
           ? "border-border-base bg-bg/85 backdrop-blur-md"
-          : "border-transparent bg-bg/60 backdrop-blur-sm",
+          : "bg-bg/60 border-transparent backdrop-blur-sm",
       )}
     >
-      <nav aria-label="Main" className="mx-auto flex h-16 max-w-5xl items-center gap-4 px-5 sm:px-6">
+      <nav
+        aria-label="Main"
+        className="mx-auto flex h-16 max-w-5xl items-center gap-4 px-5 sm:px-6"
+      >
         <Link
           href="/"
-          className="mr-auto rounded-md text-[15px] font-semibold tracking-tight text-fg"
+          className="text-fg mr-auto rounded-md text-[15px] font-semibold tracking-tight"
         >
           {name}
           <span className="text-accent">.</span>
@@ -140,7 +143,7 @@ export function SiteNav({ items, name }: { items: NavItem[]; name: string }) {
           aria-label="Open menu"
           aria-expanded={open}
           aria-controls="mobile-menu"
-          className="grid h-9 w-9 place-items-center rounded-lg border border-border-base text-fg-muted hover:text-fg lg:hidden"
+          className="border-border-base text-fg-muted hover:text-fg grid h-9 w-9 place-items-center rounded-lg border lg:hidden"
         >
           <MenuIcon width={18} height={18} />
         </button>
@@ -162,7 +165,7 @@ export function SiteNav({ items, name }: { items: NavItem[]; name: string }) {
             onClick={() => setOpen(false)}
             className="absolute inset-0 h-full w-full cursor-default bg-black/40"
           />
-          <div className="absolute inset-x-0 top-0 max-h-dvh overflow-y-auto border-b border-border-base bg-bg pb-6 shadow-raised">
+          <div className="border-border-base bg-bg shadow-raised absolute inset-x-0 top-0 max-h-dvh overflow-y-auto border-b pb-6">
             <div className="flex h-16 items-center gap-4 px-5">
               <span className="mr-auto text-[15px] font-semibold">{name}</span>
               <ThemeToggle />
@@ -171,7 +174,7 @@ export function SiteNav({ items, name }: { items: NavItem[]; name: string }) {
                 type="button"
                 onClick={() => setOpen(false)}
                 aria-label="Close menu"
-                className="grid h-9 w-9 place-items-center rounded-lg border border-border-base text-fg-muted hover:text-fg"
+                className="border-border-base text-fg-muted hover:text-fg grid h-9 w-9 place-items-center rounded-lg border"
               >
                 <CloseIcon width={18} height={18} />
               </button>

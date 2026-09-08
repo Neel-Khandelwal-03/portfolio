@@ -18,13 +18,7 @@ const eventSchema = z.object({
   detail: z.string().trim().max(240).optional().nullable(),
 });
 
-const ALLOWED_PREFIXES = [
-  "page_view",
-  "project_",
-  "social_",
-  "resume_",
-  "contact_",
-] as const;
+const ALLOWED_PREFIXES = ["page_view", "project_", "social_", "resume_", "contact_"] as const;
 
 export async function POST(request: Request) {
   try {

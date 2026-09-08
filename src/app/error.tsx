@@ -23,21 +23,21 @@ export default function GlobalError({
   return (
     <div className="grid min-h-dvh place-items-center px-5">
       <div className="max-w-md text-center">
-        <p className="font-mono text-[11px] font-semibold tracking-[0.16em] text-accent uppercase">
+        <p className="text-accent font-mono text-[11px] font-semibold tracking-[0.16em] uppercase">
           Error
         </p>
         <h1 className="mt-3 text-2xl font-semibold tracking-tight">Something went wrong</h1>
-        <p className="mt-3 text-[15px] leading-relaxed text-fg-muted">
+        <p className="text-fg-muted mt-3 text-[15px] leading-relaxed">
           The page could not be loaded. Trying again usually fixes it.
         </p>
         {error.digest ? (
-          <p className="mt-3 font-mono text-xs text-fg-subtle">Reference: {error.digest}</p>
+          <p className="text-fg-subtle mt-3 font-mono text-xs">Reference: {error.digest}</p>
         ) : null}
         <div className="mt-7 flex justify-center gap-3">
           <button
             type="button"
             onClick={reset}
-            className="inline-flex h-10 items-center rounded-lg bg-accent px-5 text-sm font-medium text-accent-fg transition-colors duration-150 hover:bg-accent-hover"
+            className="bg-accent text-accent-fg hover:bg-accent-hover inline-flex h-10 items-center rounded-lg px-5 text-sm font-medium transition-colors duration-150"
           >
             Try again
           </button>
@@ -46,7 +46,7 @@ export default function GlobalError({
           {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
           <a
             href="/"
-            className="inline-flex h-10 items-center rounded-lg border border-border-base px-5 text-sm font-medium text-fg transition-colors duration-150 hover:bg-bg-subtle"
+            className="border-border-base text-fg hover:bg-bg-subtle inline-flex h-10 items-center rounded-lg border px-5 text-sm font-medium transition-colors duration-150"
           >
             Go home
           </a>

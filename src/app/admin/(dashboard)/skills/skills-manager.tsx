@@ -59,11 +59,11 @@ function NewCategoryForm() {
   return (
     <form
       action={formAction}
-      className="rounded-xl border border-border-base bg-bg-raised p-5"
+      className="border-border-base bg-bg-raised rounded-xl border p-5"
       onSubmit={() => setName("")}
     >
       <h2 className="text-sm font-semibold">Add a category</h2>
-      <p className="mt-1 text-[13px] text-fg-subtle">
+      <p className="text-fg-subtle mt-1 text-[13px]">
         Categories group skills on the public site, e.g. Programming, Web Development.
       </p>
 
@@ -84,7 +84,7 @@ function NewCategoryForm() {
               className={INPUT}
             />
             {state.fieldErrors?.name ? (
-              <p className="mt-1.5 text-[13px] text-danger">{state.fieldErrors.name}</p>
+              <p className="text-danger mt-1.5 text-[13px]">{state.fieldErrors.name}</p>
             ) : null}
           </div>
           <input type="hidden" name="slug" value={slugify(name)} />
@@ -95,7 +95,7 @@ function NewCategoryForm() {
           </SubmitButton>
         </div>
         {state.fieldErrors?.slug ? (
-          <p className="text-[13px] text-danger">{state.fieldErrors.slug}</p>
+          <p className="text-danger text-[13px]">{state.fieldErrors.slug}</p>
         ) : null}
       </div>
     </form>
@@ -106,14 +106,14 @@ function CategoryCard({ group }: { group: SkillGroup }) {
   const [renaming, setRenaming] = useState(false);
 
   return (
-    <section className="rounded-xl border border-border-base bg-bg-raised">
-      <header className="flex flex-wrap items-center gap-3 border-b border-border-base p-4">
+    <section className="border-border-base bg-bg-raised rounded-xl border">
+      <header className="border-border-base flex flex-wrap items-center gap-3 border-b p-4">
         {renaming ? (
           <RenameCategoryForm group={group} onDone={() => setRenaming(false)} />
         ) : (
           <>
             <h2 className="text-sm font-semibold">{group.name}</h2>
-            <span className="rounded border border-border-base px-1.5 py-0.5 text-[11px] text-fg-subtle">
+            <span className="border-border-base text-fg-subtle rounded border px-1.5 py-0.5 text-[11px]">
               {group.skills.length} {group.skills.length === 1 ? "skill" : "skills"}
             </span>
             <div className="ml-auto flex items-center gap-1">
@@ -121,7 +121,7 @@ function CategoryCard({ group }: { group: SkillGroup }) {
                 type="button"
                 onClick={() => setRenaming(true)}
                 aria-label={`Rename ${group.name}`}
-                className="grid h-8 w-8 place-items-center rounded-lg text-fg-subtle hover:bg-bg-subtle hover:text-fg"
+                className="text-fg-subtle hover:bg-bg-subtle hover:text-fg grid h-8 w-8 place-items-center rounded-lg"
               >
                 <EditIcon width={14} height={14} />
               </button>
@@ -139,7 +139,7 @@ function CategoryCard({ group }: { group: SkillGroup }) {
 
       <div className="p-4">
         {group.skills.length === 0 ? (
-          <p className="mb-3 text-[13px] text-fg-subtle">No skills in this category yet.</p>
+          <p className="text-fg-subtle mb-3 text-[13px]">No skills in this category yet.</p>
         ) : (
           <ul className="mb-4 space-y-1.5">
             {group.skills.map((skill, index) => (
@@ -186,7 +186,7 @@ function RenameCategoryForm({ group, onDone }: { group: SkillGroup; onDone: () =
       <button
         type="button"
         onClick={onDone}
-        className="inline-flex h-10 items-center rounded-lg border border-border-base px-3 text-sm font-medium hover:bg-bg-subtle"
+        className="border-border-base hover:bg-bg-subtle inline-flex h-10 items-center rounded-lg border px-3 text-sm font-medium"
       >
         Cancel
       </button>
@@ -218,7 +218,7 @@ function SkillRow({
       <li>
         <form
           action={formAction}
-          className="flex flex-wrap items-center gap-2 rounded-lg border border-accent bg-bg p-2"
+          className="border-accent bg-bg flex flex-wrap items-center gap-2 rounded-lg border p-2"
         >
           <input type="hidden" name="id" value={skill.id} />
           <input type="hidden" name="categoryId" value={categoryId} />
@@ -239,7 +239,7 @@ function SkillRow({
           <button
             type="button"
             onClick={() => setEditing(false)}
-            className="inline-flex h-10 items-center rounded-lg border border-border-base px-3 text-sm font-medium hover:bg-bg-subtle"
+            className="border-border-base hover:bg-bg-subtle inline-flex h-10 items-center rounded-lg border px-3 text-sm font-medium"
           >
             Cancel
           </button>
@@ -249,7 +249,7 @@ function SkillRow({
   }
 
   return (
-    <li className="flex items-center gap-2 rounded-lg border border-border-base bg-bg px-3 py-2">
+    <li className="border-border-base bg-bg flex items-center gap-2 rounded-lg border px-3 py-2">
       <OrderControls
         id={skill.id}
         label={skill.name}
@@ -259,7 +259,7 @@ function SkillRow({
       />
       <span className="min-w-0 flex-1 truncate text-sm font-medium">{skill.name}</span>
       {skill.isVisible ? null : (
-        <span className="rounded border border-border-base px-1.5 py-0.5 text-[11px] text-fg-subtle">
+        <span className="border-border-base text-fg-subtle rounded border px-1.5 py-0.5 text-[11px]">
           Hidden
         </span>
       )}
@@ -267,7 +267,7 @@ function SkillRow({
         type="button"
         onClick={() => setEditing(true)}
         aria-label={`Edit ${skill.name}`}
-        className="grid h-8 w-8 place-items-center rounded-lg text-fg-subtle hover:bg-bg-subtle hover:text-fg"
+        className="text-fg-subtle hover:bg-bg-subtle hover:text-fg grid h-8 w-8 place-items-center rounded-lg"
       >
         <EditIcon width={14} height={14} />
       </button>
@@ -311,7 +311,7 @@ function NewSkillForm({ categoryId, categoryName }: { categoryId: number; catego
         Add
       </SubmitButton>
       {state.fieldErrors?.name ? (
-        <p className="w-full text-[13px] text-danger">{state.fieldErrors.name}</p>
+        <p className="text-danger w-full text-[13px]">{state.fieldErrors.name}</p>
       ) : null}
     </form>
   );

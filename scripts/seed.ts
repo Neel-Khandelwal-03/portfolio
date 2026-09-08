@@ -203,14 +203,7 @@ async function main() {
           "as a login. File uploads go to object storage behind a validating adapter rather than " +
           "into Postgres.",
         category: "Full-Stack",
-        technologies: [
-          "Next.js",
-          "TypeScript",
-          "PostgreSQL",
-          "Drizzle ORM",
-          "Tailwind CSS",
-          "Zod",
-        ],
+        technologies: ["Next.js", "TypeScript", "PostgreSQL", "Drizzle ORM", "Tailwind CSS", "Zod"],
         githubUrl: "https://github.com/neelkhandelwal/portfolio",
         isFeatured: true,
         isPublished: true,

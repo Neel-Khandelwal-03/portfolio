@@ -99,9 +99,7 @@ async function validate(file: File, accept: UploadKind) {
   const signature = SIGNATURES[declared];
 
   if (!signature) {
-    throw new UploadError(
-      "Unsupported file type. Allowed: PNG, JPEG, WebP, AVIF and PDF.",
-    );
+    throw new UploadError("Unsupported file type. Allowed: PNG, JPEG, WebP, AVIF and PDF.");
   }
 
   if (!signature.matches(head)) {
@@ -118,9 +116,7 @@ async function validate(file: File, accept: UploadKind) {
 
   const limit = signature.kind === "image" ? MAX_IMAGE_BYTES : MAX_DOCUMENT_BYTES;
   if (file.size > limit) {
-    throw new UploadError(
-      `File is too large. The limit is ${Math.round(limit / 1024 / 1024)} MB.`,
-    );
+    throw new UploadError(`File is too large. The limit is ${Math.round(limit / 1024 / 1024)} MB.`);
   }
 
   return signature;
@@ -176,10 +172,7 @@ export async function uploadFile(
   return { ...common, url: `/api/media/${pathname}`, provider: "local" };
 }
 
-export async function deleteStoredFile(
-  pathname: string,
-  provider: StorageProvider,
-): Promise<void> {
+export async function deleteStoredFile(pathname: string, provider: StorageProvider): Promise<void> {
   if (provider === "blob") {
     const { del } = await import("@vercel/blob");
     // Vercel Blob deletes by URL; the stored URL is rebuilt from the token host

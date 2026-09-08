@@ -5,12 +5,7 @@ import { notFound } from "next/navigation";
 
 import { TrackedLink } from "@/components/public/tracked-link";
 import { Container, Prose, TechChip } from "@/components/ui";
-import {
-  ArrowLeftIcon,
-  CalendarIcon,
-  ExternalLinkIcon,
-  GitHubIcon,
-} from "@/components/ui/icons";
+import { ArrowLeftIcon, CalendarIcon, ExternalLinkIcon, GitHubIcon } from "@/components/ui/icons";
 import { siteUrl } from "@/lib/env";
 import { formatDateRange, safeUrl } from "@/lib/utils";
 import { getProjectBySlug, getPublishedProjectSlugs } from "@/services/portfolio";
@@ -91,15 +86,15 @@ export default async function ProjectPage({ params }: Params) {
       <Container className="max-w-3xl">
         <Link
           href="/#projects"
-          className="inline-flex items-center gap-2 text-[13px] font-medium text-fg-muted hover:text-fg"
+          className="text-fg-muted hover:text-fg inline-flex items-center gap-2 text-[13px] font-medium"
         >
           <ArrowLeftIcon width={14} height={14} />
           Back to projects
         </Link>
 
         <header className="mt-6">
-          <div className="flex flex-wrap items-center gap-3 text-[13px] text-fg-subtle">
-            <span className="rounded border border-border-base px-2 py-0.5 font-mono text-[10px] tracking-wide uppercase">
+          <div className="text-fg-subtle flex flex-wrap items-center gap-3 text-[13px]">
+            <span className="border-border-base rounded border px-2 py-0.5 font-mono text-[10px] tracking-wide uppercase">
               {project.category}
             </span>
             {dates ? (
@@ -115,7 +110,7 @@ export default async function ProjectPage({ params }: Params) {
           </h1>
 
           {project.summary ? (
-            <p className="mt-4 text-base leading-relaxed text-fg-muted">{project.summary}</p>
+            <p className="text-fg-muted mt-4 text-base leading-relaxed">{project.summary}</p>
           ) : null}
 
           {github || live ? (
@@ -127,7 +122,7 @@ export default async function ProjectPage({ params }: Params) {
                   href={live}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex h-10 items-center gap-2 rounded-lg bg-accent px-4 text-sm font-medium text-accent-fg transition-colors duration-150 hover:bg-accent-hover"
+                  className="bg-accent text-accent-fg hover:bg-accent-hover inline-flex h-10 items-center gap-2 rounded-lg px-4 text-sm font-medium transition-colors duration-150"
                 >
                   <ExternalLinkIcon width={15} height={15} />
                   Live demo
@@ -140,7 +135,7 @@ export default async function ProjectPage({ params }: Params) {
                   href={github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex h-10 items-center gap-2 rounded-lg border border-border-base bg-bg-raised px-4 text-sm font-medium text-fg transition-colors duration-150 hover:border-border-strong hover:bg-bg-subtle"
+                  className="border-border-base bg-bg-raised text-fg hover:border-border-strong hover:bg-bg-subtle inline-flex h-10 items-center gap-2 rounded-lg border px-4 text-sm font-medium transition-colors duration-150"
                 >
                   <GitHubIcon width={15} height={15} />
                   Source code
@@ -151,7 +146,7 @@ export default async function ProjectPage({ params }: Params) {
         </header>
 
         {cover ? (
-          <div className="relative mt-10 aspect-[16/9] overflow-hidden rounded-xl border border-border-base bg-bg-subtle">
+          <div className="border-border-base bg-bg-subtle relative mt-10 aspect-[16/9] overflow-hidden rounded-xl border">
             <Image
               src={cover}
               alt={`${project.title} screenshot`}
@@ -167,7 +162,7 @@ export default async function ProjectPage({ params }: Params) {
           <section aria-labelledby="tech-heading" className="mt-10">
             <h2
               id="tech-heading"
-              className="font-mono text-[11px] font-semibold tracking-[0.16em] text-fg-subtle uppercase"
+              className="text-fg-subtle font-mono text-[11px] font-semibold tracking-[0.16em] uppercase"
             >
               Built with
             </h2>
@@ -202,7 +197,7 @@ export default async function ProjectPage({ params }: Params) {
 
                 return (
                   <figure key={index}>
-                    <div className="relative aspect-[16/10] overflow-hidden rounded-xl border border-border-base bg-bg-subtle">
+                    <div className="border-border-base bg-bg-subtle relative aspect-[16/10] overflow-hidden rounded-xl border">
                       <Image
                         src={url}
                         alt={shot.caption || `${project.title} screenshot ${index + 1}`}
@@ -213,7 +208,7 @@ export default async function ProjectPage({ params }: Params) {
                       />
                     </div>
                     {shot.caption ? (
-                      <figcaption className="mt-2.5 text-[13px] text-fg-subtle">
+                      <figcaption className="text-fg-subtle mt-2.5 text-[13px]">
                         {shot.caption}
                       </figcaption>
                     ) : null}
@@ -224,10 +219,10 @@ export default async function ProjectPage({ params }: Params) {
           </section>
         ) : null}
 
-        <footer className="mt-14 border-t border-border-base pt-8">
+        <footer className="border-border-base mt-14 border-t pt-8">
           <Link
             href="/#projects"
-            className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:underline"
+            className="text-accent inline-flex items-center gap-2 text-sm font-medium hover:underline"
           >
             <ArrowLeftIcon width={14} height={14} />
             All projects

@@ -13,18 +13,18 @@ Admin save → Zod validation → PostgreSQL → tag revalidation → public sit
 
 ## Stack
 
-| Layer | Technology | Why |
-| --- | --- | --- |
-| Framework | Next.js 16 (App Router, React 19) | Server Components, streaming, tag-based revalidation |
-| Language | TypeScript (strict) | Types flow from the DB schema to the UI |
-| Styling | Tailwind CSS v4 | Zero-runtime, CSS-first configuration |
-| Database | PostgreSQL 18 | Real relational constraints for relational content |
-| ORM | Drizzle ORM + drizzle-kit | Thin, typed SQL with proper migrations |
-| Driver | `postgres` (postgres.js) | One driver for local, Supabase, Neon, Railway |
-| Validation | Zod 4 | One schema shared by forms, Server Actions and the REST API |
-| Auth | `node:crypto` scrypt + DB-backed sessions | No dependency, OWASP-approved KDF, server-revocable |
-| Storage | Vercel Blob, or the local filesystem in development | Binaries never go into Postgres |
-| Analytics | First-party, `sendBeacon` → own endpoint | No third-party script, no cookies |
+| Layer      | Technology                                          | Why                                                         |
+| ---------- | --------------------------------------------------- | ----------------------------------------------------------- |
+| Framework  | Next.js 16 (App Router, React 19)                   | Server Components, streaming, tag-based revalidation        |
+| Language   | TypeScript (strict)                                 | Types flow from the DB schema to the UI                     |
+| Styling    | Tailwind CSS v4                                     | Zero-runtime, CSS-first configuration                       |
+| Database   | PostgreSQL 18                                       | Real relational constraints for relational content          |
+| ORM        | Drizzle ORM + drizzle-kit                           | Thin, typed SQL with proper migrations                      |
+| Driver     | `postgres` (postgres.js)                            | One driver for local, Supabase, Neon, Railway               |
+| Validation | Zod 4                                               | One schema shared by forms, Server Actions and the REST API |
+| Auth       | `node:crypto` scrypt + DB-backed sessions           | No dependency, OWASP-approved KDF, server-revocable         |
+| Storage    | Vercel Blob, or the local filesystem in development | Binaries never go into Postgres                             |
+| Analytics  | First-party, `sendBeacon` → own endpoint            | No third-party script, no cookies                           |
 
 **No** UI kit, animation library, `next-auth`, state manager, drag-and-drop library or icon
 package. Icons are inline SVG; ordering uses accessible move-up/move-down buttons.
@@ -91,7 +91,7 @@ site.
 - Middleware only does a cookie check for redirect UX. **Real authorisation is re-verified
   against the database in the admin layout, in every Server Action, and in every admin route
   handler.**
-- Uploads are validated by extension, declared MIME type *and* magic bytes, with size caps.
+- Uploads are validated by extension, declared MIME type _and_ magic bytes, with size caps.
   SVG is rejected outright. Stored filenames are generated, never taken from the upload.
 - A strict CSP, `X-Frame-Options: DENY`, `nosniff`, HSTS and a restrictive `Permissions-Policy`
   are set for every response.
@@ -125,31 +125,31 @@ node -e "console.log(require('crypto').randomBytes(48).toString('base64'))"
 
 ### Scripts
 
-| Command | What it does |
-| --- | --- |
-| `npm run dev` | Development server |
-| `npm run build` / `npm start` | Production build and server |
-| `npm run lint` | ESLint |
-| `npm run typecheck` | `tsc --noEmit` |
-| `npm run format` | Prettier |
-| `npm run db:generate` | Generate a migration from schema changes |
-| `npm run db:migrate` | Apply migrations |
-| `npm run db:seed` | Seed starter content (safe to re-run — it skips existing rows) |
-| `npm run db:studio` | Drizzle Studio |
-| `npm run admin:create` | Create or reset the admin password from the environment |
-| `npm run check:services` | Smoke-test the data layer against the real database |
+| Command                       | What it does                                                   |
+| ----------------------------- | -------------------------------------------------------------- |
+| `npm run dev`                 | Development server                                             |
+| `npm run build` / `npm start` | Production build and server                                    |
+| `npm run lint`                | ESLint                                                         |
+| `npm run typecheck`           | `tsc --noEmit`                                                 |
+| `npm run format`              | Prettier                                                       |
+| `npm run db:generate`         | Generate a migration from schema changes                       |
+| `npm run db:migrate`          | Apply migrations                                               |
+| `npm run db:seed`             | Seed starter content (safe to re-run — it skips existing rows) |
+| `npm run db:studio`           | Drizzle Studio                                                 |
+| `npm run admin:create`        | Create or reset the admin password from the environment        |
+| `npm run check:services`      | Smoke-test the data layer against the real database            |
 
 ---
 
 ## Environment variables
 
-| Variable | Required | Purpose |
-| --- | --- | --- |
-| `DATABASE_URL` | yes | PostgreSQL connection string. Use the **pooled** URL on serverless. |
-| `AUTH_SECRET` | yes | 32+ random bytes. |
-| `NEXT_PUBLIC_SITE_URL` | recommended | Canonical URLs, sitemap, Open Graph. Falls back to the Vercel URL. |
-| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | for `admin:create` / `db:seed` only | Bootstraps the admin account. Remove after first use. |
-| `BLOB_READ_WRITE_TOKEN` | production | Enables Vercel Blob. Without it, uploads go to `./.data/uploads`. |
+| Variable                         | Required                            | Purpose                                                             |
+| -------------------------------- | ----------------------------------- | ------------------------------------------------------------------- |
+| `DATABASE_URL`                   | yes                                 | PostgreSQL connection string. Use the **pooled** URL on serverless. |
+| `AUTH_SECRET`                    | yes                                 | 32+ random bytes.                                                   |
+| `NEXT_PUBLIC_SITE_URL`           | recommended                         | Canonical URLs, sitemap, Open Graph. Falls back to the Vercel URL.  |
+| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | for `admin:create` / `db:seed` only | Bootstraps the admin account. Remove after first use.               |
+| `BLOB_READ_WRITE_TOKEN`          | production                          | Enables Vercel Blob. Without it, uploads go to `./.data/uploads`.   |
 
 `.env*` is git-ignored apart from `.env.example`. No secret is ever sent to the browser —
 `src/lib/env.ts` is marked `server-only`, which turns any accidental client import into a
@@ -186,23 +186,23 @@ Designed for Vercel, but it is a standard Next.js app and will run anywhere Node
 
 Everything below changes the public site immediately. No code, JSON, rebuild or redeploy.
 
-| To do this | Go here |
-| --- | --- |
-| **Add a project** | `/admin/projects` → *New project*. Fill in the name (the slug fills itself), summary, description, technologies and links. Tick **Published** to make it live and **Featured** to put it on the homepage. → *Create project*. |
-| **Edit a project** | `/admin/projects` → click its name → change anything → *Save project*. |
-| **Delete a project** | Open the project (or use the bin icon in the list) → *Delete* → confirm in the dialog. |
-| **Add an internship** | `/admin/experience` → *New experience*. Leave **End date** empty for a current role and the timeline shows "Present". Responsibilities and achievements are one bullet per line. |
-| **Edit an internship** | `/admin/experience` → click the role → *Save experience*. |
-| **Update skills** | `/admin/skills`. Add a category, then type a skill into that category's box and press *Add*. The pencil renames, the bin deletes, the arrows reorder. |
-| **Update education** | `/admin/education` → *New entry*, or click an existing one. |
-| **Add certifications** | `/admin/certifications` → *New certification*. Add the credential ID and verification URL to get a *Verify* link on the public site. |
-| **Add achievements** | `/admin/achievements` → *New achievement*. |
-| **Update the resume** | `/admin/resume` → *Upload* a PDF → *Save resume*. The hero button and resume section appear automatically. |
-| **Change your profile** | `/admin/profile` — name, headline, hero introduction, about text, photo, email, location, availability badge. |
-| **Change social links** | `/admin/social-links`. The platform you pick decides the icon. |
-| **SEO and the footer** | `/admin/settings` — page title, meta description, keywords, social preview image, footer text, and switches for the contact form and analytics. |
-| **Read contact messages** | `/admin/messages`. |
-| **Manage uploaded files** | `/admin/media`. |
+| To do this                | Go here                                                                                                                                                                                                                       |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Add a project**         | `/admin/projects` → _New project_. Fill in the name (the slug fills itself), summary, description, technologies and links. Tick **Published** to make it live and **Featured** to put it on the homepage. → _Create project_. |
+| **Edit a project**        | `/admin/projects` → click its name → change anything → _Save project_.                                                                                                                                                        |
+| **Delete a project**      | Open the project (or use the bin icon in the list) → _Delete_ → confirm in the dialog.                                                                                                                                        |
+| **Add an internship**     | `/admin/experience` → _New experience_. Leave **End date** empty for a current role and the timeline shows "Present". Responsibilities and achievements are one bullet per line.                                              |
+| **Edit an internship**    | `/admin/experience` → click the role → _Save experience_.                                                                                                                                                                     |
+| **Update skills**         | `/admin/skills`. Add a category, then type a skill into that category's box and press _Add_. The pencil renames, the bin deletes, the arrows reorder.                                                                         |
+| **Update education**      | `/admin/education` → _New entry_, or click an existing one.                                                                                                                                                                   |
+| **Add certifications**    | `/admin/certifications` → _New certification_. Add the credential ID and verification URL to get a _Verify_ link on the public site.                                                                                          |
+| **Add achievements**      | `/admin/achievements` → _New achievement_.                                                                                                                                                                                    |
+| **Update the resume**     | `/admin/resume` → _Upload_ a PDF → _Save resume_. The hero button and resume section appear automatically.                                                                                                                    |
+| **Change your profile**   | `/admin/profile` — name, headline, hero introduction, about text, photo, email, location, availability badge.                                                                                                                 |
+| **Change social links**   | `/admin/social-links`. The platform you pick decides the icon.                                                                                                                                                                |
+| **SEO and the footer**    | `/admin/settings` — page title, meta description, keywords, social preview image, footer text, and switches for the contact form and analytics.                                                                               |
+| **Read contact messages** | `/admin/messages`.                                                                                                                                                                                                            |
+| **Manage uploaded files** | `/admin/media`.                                                                                                                                                                                                               |
 
 Ordering everywhere uses the **↑ / ↓ buttons**, which write `display_order` — the same column
 the public site sorts by. Buttons were chosen over drag-and-drop deliberately: they are
@@ -213,15 +213,15 @@ readers, and add no dependency.
 
 ## API
 
-| Method | Route | Access |
-| --- | --- | --- |
-| `GET` | `/api/projects` | Public. Published projects only. |
-| `POST` | `/api/contact` | Public. Validated, honeypot-protected, rate-limited. |
-| `POST` | `/api/analytics` | Public. Allowlisted event names only. |
-| `GET` | `/api/media/*` | Public. Local storage adapter only. |
-| `GET POST` | `/api/admin/projects` | **Admin session required.** |
-| `GET PUT DELETE` | `/api/admin/projects/:id` | **Admin session required.** |
-| `POST` | `/api/admin/upload` | **Admin session required.** |
+| Method           | Route                     | Access                                               |
+| ---------------- | ------------------------- | ---------------------------------------------------- |
+| `GET`            | `/api/projects`           | Public. Published projects only.                     |
+| `POST`           | `/api/contact`            | Public. Validated, honeypot-protected, rate-limited. |
+| `POST`           | `/api/analytics`          | Public. Allowlisted event names only.                |
+| `GET`            | `/api/media/*`            | Public. Local storage adapter only.                  |
+| `GET POST`       | `/api/admin/projects`     | **Admin session required.**                          |
+| `GET PUT DELETE` | `/api/admin/projects/:id` | **Admin session required.**                          |
+| `POST`           | `/api/admin/upload`       | **Admin session required.**                          |
 
 Every admin route verifies the session against the database and checks the request origin.
 Unauthenticated requests get `401` and change nothing.

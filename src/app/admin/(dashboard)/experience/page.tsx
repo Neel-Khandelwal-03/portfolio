@@ -14,7 +14,7 @@ export default async function ExperienceAdminPage() {
   const newLink = (
     <Link
       href="/admin/experience/new"
-      className="inline-flex h-10 items-center gap-2 rounded-lg bg-accent px-4 text-sm font-medium text-accent-fg hover:bg-accent-hover"
+      className="bg-accent text-accent-fg hover:bg-accent-hover inline-flex h-10 items-center gap-2 rounded-lg px-4 text-sm font-medium"
     >
       <PlusIcon width={15} height={15} />
       New experience
@@ -51,15 +51,17 @@ export default async function ExperienceAdminPage() {
                 <div className="flex flex-wrap items-center gap-2">
                   <Link
                     href={`/admin/experience/${item.id}`}
-                    className="text-sm font-semibold hover:text-accent"
+                    className="hover:text-accent text-sm font-semibold"
                   >
                     {item.role}
                   </Link>
-                  <span className="text-fg-subtle" aria-hidden>·</span>
-                  <span className="text-sm text-fg-muted">{item.company}</span>
+                  <span className="text-fg-subtle" aria-hidden>
+                    ·
+                  </span>
+                  <span className="text-fg-muted text-sm">{item.company}</span>
                   {item.isPublished ? null : <Badge tone="warning">Hidden</Badge>}
                 </div>
-                <p className="mt-1 text-[12px] text-fg-subtle">
+                <p className="text-fg-subtle mt-1 text-[12px]">
                   {formatDateRange(item.startDate, item.endDate)} · {item.employmentType}
                   {item.location ? ` · ${item.location}` : ""}
                 </p>
@@ -69,7 +71,7 @@ export default async function ExperienceAdminPage() {
                 <Link
                   href={`/admin/experience/${item.id}`}
                   aria-label={`Edit ${item.role} at ${item.company}`}
-                  className="grid h-8 w-8 place-items-center rounded-lg text-fg-subtle hover:bg-bg-subtle hover:text-fg"
+                  className="text-fg-subtle hover:bg-bg-subtle hover:text-fg grid h-8 w-8 place-items-center rounded-lg"
                 >
                   <EditIcon width={14} height={14} />
                 </Link>

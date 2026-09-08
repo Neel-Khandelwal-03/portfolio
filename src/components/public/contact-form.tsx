@@ -60,20 +60,15 @@ export function ContactForm({ recipient }: { recipient: string }) {
     return (
       <div
         role="status"
-        className="flex items-start gap-3 rounded-xl border border-border-base bg-success-soft p-5"
+        className="border-border-base bg-success-soft flex items-start gap-3 rounded-xl border p-5"
       >
-        <CheckIcon width={18} height={18} className="mt-0.5 shrink-0 text-success" />
+        <CheckIcon width={18} height={18} className="text-success mt-0.5 shrink-0" />
         <div>
-          <p className="text-sm font-semibold text-fg">Message sent</p>
-          <p className="mt-1 text-sm text-fg-muted">
+          <p className="text-fg text-sm font-semibold">Message sent</p>
+          <p className="text-fg-muted mt-1 text-sm">
             Thanks for reaching out — I will reply to you shortly.
           </p>
-          <Button
-            variant="secondary"
-            size="sm"
-            className="mt-4"
-            onClick={() => setStatus("idle")}
-          >
+          <Button variant="secondary" size="sm" className="mt-4" onClick={() => setStatus("idle")}>
             Send another message
           </Button>
         </div>
@@ -88,9 +83,9 @@ export function ContactForm({ recipient }: { recipient: string }) {
       {formError ? (
         <div
           role="alert"
-          className="flex items-start gap-2.5 rounded-lg border border-border-base bg-danger-soft p-3.5 text-sm text-fg"
+          className="border-border-base bg-danger-soft text-fg flex items-start gap-2.5 rounded-lg border p-3.5 text-sm"
         >
-          <AlertIcon width={16} height={16} className="mt-0.5 shrink-0 text-danger" />
+          <AlertIcon width={16} height={16} className="text-danger mt-0.5 shrink-0" />
           <span>{formError}</span>
         </div>
       ) : null}
@@ -113,7 +108,7 @@ export function ContactForm({ recipient }: { recipient: string }) {
             placeholder="Your name"
           />
           {errors.name ? (
-            <p id="contact-name-error" className="mt-1.5 text-[13px] text-danger">
+            <p id="contact-name-error" className="text-danger mt-1.5 text-[13px]">
               {errors.name}
             </p>
           ) : null}
@@ -137,7 +132,7 @@ export function ContactForm({ recipient }: { recipient: string }) {
             placeholder="you@example.com"
           />
           {errors.email ? (
-            <p id="contact-email-error" className="mt-1.5 text-[13px] text-danger">
+            <p id="contact-email-error" className="text-danger mt-1.5 text-[13px]">
               {errors.email}
             </p>
           ) : null}
@@ -162,7 +157,7 @@ export function ContactForm({ recipient }: { recipient: string }) {
           placeholder="What would you like to talk about?"
         />
         {errors.message ? (
-          <p id="contact-message-error" className="mt-1.5 text-[13px] text-danger">
+          <p id="contact-message-error" className="text-danger mt-1.5 text-[13px]">
             {errors.message}
           </p>
         ) : null}
@@ -186,9 +181,9 @@ export function ContactForm({ recipient }: { recipient: string }) {
             "Send message"
           )}
         </Button>
-        <p className="text-[13px] text-fg-subtle">
+        <p className="text-fg-subtle text-[13px]">
           Or email me at{" "}
-          <a href={`mailto:${recipient}`} className="font-medium text-accent hover:underline">
+          <a href={`mailto:${recipient}`} className="text-accent font-medium hover:underline">
             {recipient}
           </a>
         </p>

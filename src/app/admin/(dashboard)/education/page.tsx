@@ -14,7 +14,7 @@ export default async function EducationAdminPage() {
   const newLink = (
     <Link
       href="/admin/education/new"
-      className="inline-flex h-10 items-center gap-2 rounded-lg bg-accent px-4 text-sm font-medium text-accent-fg hover:bg-accent-hover"
+      className="bg-accent text-accent-fg hover:bg-accent-hover inline-flex h-10 items-center gap-2 rounded-lg px-4 text-sm font-medium"
     >
       <PlusIcon width={15} height={15} />
       New entry
@@ -41,11 +41,11 @@ export default async function EducationAdminPage() {
               <div className="min-w-0 flex-1">
                 <Link
                   href={`/admin/education/${item.id}`}
-                  className="text-sm font-semibold hover:text-accent"
+                  className="hover:text-accent text-sm font-semibold"
                 >
                   {item.institution}
                 </Link>
-                <p className="mt-1 text-[12px] text-fg-subtle">
+                <p className="text-fg-subtle mt-1 text-[12px]">
                   {item.degree}
                   {item.field ? ` · ${item.field}` : ""} ·{" "}
                   {formatDateRange(item.startDate, item.endDate)}
@@ -56,7 +56,7 @@ export default async function EducationAdminPage() {
                 <Link
                   href={`/admin/education/${item.id}`}
                   aria-label={`Edit ${item.institution}`}
-                  className="grid h-8 w-8 place-items-center rounded-lg text-fg-subtle hover:bg-bg-subtle hover:text-fg"
+                  className="text-fg-subtle hover:bg-bg-subtle hover:text-fg grid h-8 w-8 place-items-center rounded-lg"
                 >
                   <EditIcon width={14} height={14} />
                 </Link>

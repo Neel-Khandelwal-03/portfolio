@@ -2,12 +2,7 @@ import Image from "next/image";
 
 import { TrackedLink } from "@/components/public/tracked-link";
 import { ButtonLink, Container } from "@/components/ui";
-import {
-  ArrowRightIcon,
-  DocumentIcon,
-  LocationIcon,
-  SocialIcon,
-} from "@/components/ui/icons";
+import { ArrowRightIcon, DocumentIcon, LocationIcon, SocialIcon } from "@/components/ui/icons";
 import { initials, safeUrl } from "@/lib/utils";
 import type { Profile, SocialLink } from "@/db/schema";
 
@@ -18,13 +13,7 @@ import type { Profile, SocialLink } from "@/db/schema";
  * outbound-link tracking, and the avatar is the single `priority` image on the
  * page so it does not compete with anything for bandwidth.
  */
-export function Hero({
-  profile,
-  socialLinks,
-}: {
-  profile: Profile;
-  socialLinks: SocialLink[];
-}) {
+export function Hero({ profile, socialLinks }: { profile: Profile; socialLinks: SocialLink[] }) {
   const resumeUrl = safeUrl(profile.resumeUrl);
   const avatar = safeUrl(profile.avatarUrl);
 
@@ -34,30 +23,22 @@ export function Hero({
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-start lg:gap-16">
           <div>
             {profile.availableForWork ? (
-              <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-border-base bg-bg-subtle py-1 pr-3 pl-2 text-xs font-medium text-fg-muted">
-                <span
-                  aria-hidden
-                  className="inline-block h-1.5 w-1.5 rounded-full bg-success"
-                />
+              <p className="border-border-base bg-bg-subtle text-fg-muted mb-6 inline-flex items-center gap-2 rounded-full border py-1 pr-3 pl-2 text-xs font-medium">
+                <span aria-hidden className="bg-success inline-block h-1.5 w-1.5 rounded-full" />
                 Open to internships and new grad roles
               </p>
             ) : null}
 
-            <h1
-              id="hero-heading"
-              className="text-4xl font-semibold tracking-tight sm:text-5xl"
-            >
+            <h1 id="hero-heading" className="text-4xl font-semibold tracking-tight sm:text-5xl">
               {profile.fullName}
             </h1>
 
             {profile.headline ? (
-              <p className="mt-3 text-lg font-medium text-accent sm:text-xl">
-                {profile.headline}
-              </p>
+              <p className="text-accent mt-3 text-lg font-medium sm:text-xl">{profile.headline}</p>
             ) : null}
 
             {profile.introduction ? (
-              <p className="mt-5 max-w-xl text-[15px] leading-relaxed text-fg-muted sm:text-base">
+              <p className="text-fg-muted mt-5 max-w-xl text-[15px] leading-relaxed sm:text-base">
                 {profile.introduction}
               </p>
             ) : null}
@@ -74,7 +55,7 @@ export function Hero({
                   href={resumeUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-border-base bg-bg-raised px-5 text-[15px] font-medium text-fg transition-colors duration-150 hover:border-border-strong hover:bg-bg-subtle"
+                  className="border-border-base bg-bg-raised text-fg hover:border-border-strong hover:bg-bg-subtle inline-flex h-11 items-center justify-center gap-2 rounded-lg border px-5 text-[15px] font-medium transition-colors duration-150"
                 >
                   <DocumentIcon width={15} height={15} />
                   Resume
@@ -101,7 +82,7 @@ export function Hero({
                         href={href}
                         target={external ? "_blank" : undefined}
                         rel={external ? "noopener noreferrer" : undefined}
-                        className="inline-flex items-center gap-2 rounded-lg border border-border-base px-3 py-2 text-[13px] font-medium text-fg-muted transition-colors duration-150 hover:border-border-strong hover:text-fg"
+                        className="border-border-base text-fg-muted hover:border-border-strong hover:text-fg inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-[13px] font-medium transition-colors duration-150"
                       >
                         <SocialIcon platform={link.platform} width={15} height={15} />
                         {link.label}
@@ -116,7 +97,7 @@ export function Hero({
           {/* Compact identity panel — avatar plus the two facts a recruiter
               scans for first. Hidden on small screens where it would only push
               the introduction below the fold. */}
-          <aside className="hidden rounded-xl border border-border-base bg-bg-subtle p-5 lg:block">
+          <aside className="border-border-base bg-bg-subtle hidden rounded-xl border p-5 lg:block">
             <div className="flex items-center gap-4">
               {avatar ? (
                 <Image
@@ -126,12 +107,12 @@ export function Hero({
                   height={56}
                   priority
                   sizes="56px"
-                  className="h-14 w-14 rounded-full border border-border-base object-cover"
+                  className="border-border-base h-14 w-14 rounded-full border object-cover"
                 />
               ) : (
                 <div
                   aria-hidden
-                  className="grid h-14 w-14 place-items-center rounded-full border border-border-base bg-bg-raised text-base font-semibold text-fg-muted"
+                  className="border-border-base bg-bg-raised text-fg-muted grid h-14 w-14 place-items-center rounded-full border text-base font-semibold"
                 >
                   {initials(profile.fullName)}
                 </div>
@@ -139,7 +120,7 @@ export function Hero({
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold">{profile.fullName}</p>
                 {profile.location ? (
-                  <p className="mt-0.5 flex items-center gap-1 text-xs text-fg-subtle">
+                  <p className="text-fg-subtle mt-0.5 flex items-center gap-1 text-xs">
                     <LocationIcon width={12} height={12} />
                     {profile.location}
                   </p>
@@ -148,11 +129,11 @@ export function Hero({
             </div>
 
             {profile.currentFocus ? (
-              <div className="mt-5 border-t border-border-base pt-4">
-                <p className="font-mono text-[10px] font-medium tracking-[0.14em] text-fg-subtle uppercase">
+              <div className="border-border-base mt-5 border-t pt-4">
+                <p className="text-fg-subtle font-mono text-[10px] font-medium tracking-[0.14em] uppercase">
                   Currently
                 </p>
-                <p className="mt-2 text-[13px] leading-relaxed text-fg-muted">
+                <p className="text-fg-muted mt-2 text-[13px] leading-relaxed">
                   {profile.currentFocus}
                 </p>
               </div>

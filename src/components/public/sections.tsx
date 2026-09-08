@@ -51,15 +51,12 @@ export function AboutSection({ profile }: { profile: Profile }) {
         {cards.length > 0 ? (
           <ul className="reveal space-y-3">
             {cards.map(({ title, body, Icon }) => (
-              <li
-                key={title}
-                className="rounded-xl border border-border-base bg-bg-subtle p-4"
-              >
-                <p className="flex items-center gap-2 text-[13px] font-semibold text-fg">
+              <li key={title} className="border-border-base bg-bg-subtle rounded-xl border p-4">
+                <p className="text-fg flex items-center gap-2 text-[13px] font-semibold">
                   <Icon width={14} height={14} className="text-accent" />
                   {title}
                 </p>
-                <p className="mt-2 text-sm leading-relaxed text-fg-muted">{body}</p>
+                <p className="text-fg-muted mt-2 text-sm leading-relaxed">{body}</p>
               </li>
             ))}
           </ul>
@@ -92,13 +89,13 @@ export function SkillsSection({ groups }: { groups: SkillGroup[] }) {
         <div className="reveal grid gap-4 sm:grid-cols-2">
           {populated.map((group) => (
             <Card key={group.id} className="p-5">
-              <h3 className="font-mono text-[11px] font-semibold tracking-[0.14em] text-fg-subtle uppercase">
+              <h3 className="text-fg-subtle font-mono text-[11px] font-semibold tracking-[0.14em] uppercase">
                 {group.name}
               </h3>
               <ul className="mt-4 flex flex-wrap gap-2">
                 {group.skills.map((skill) => (
                   <li key={skill.id}>
-                    <span className="inline-block rounded-md border border-border-base bg-bg-subtle px-2.5 py-1.5 text-[13px] font-medium text-fg-muted">
+                    <span className="border-border-base bg-bg-subtle text-fg-muted inline-block rounded-md border px-2.5 py-1.5 text-[13px] font-medium">
                       {skill.name}
                     </span>
                   </li>
@@ -130,7 +127,7 @@ export function ExperienceSection({ experiences }: { experiences: Experience[] }
           description="Add internships and roles from the admin dashboard."
         />
       ) : (
-        <ol className="relative space-y-8 border-l border-border-base pl-6 sm:pl-8">
+        <ol className="border-border-base relative space-y-8 border-l pl-6 sm:pl-8">
           {experiences.map((item) => {
             const logo = safeUrl(item.logoUrl);
             const certificate = safeUrl(item.certificateUrl);
@@ -139,7 +136,7 @@ export function ExperienceSection({ experiences }: { experiences: Experience[] }
               <li key={item.id} className="reveal relative">
                 <span
                   aria-hidden
-                  className="absolute top-1.5 -left-[1.6rem] h-2.5 w-2.5 rounded-full border-2 border-bg bg-accent sm:-left-[2.1rem]"
+                  className="border-bg bg-accent absolute top-1.5 -left-[1.6rem] h-2.5 w-2.5 rounded-full border-2 sm:-left-[2.1rem]"
                 />
 
                 <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -147,7 +144,7 @@ export function ExperienceSection({ experiences }: { experiences: Experience[] }
                   <span className="text-fg-subtle" aria-hidden>
                     ·
                   </span>
-                  <p className="flex items-center gap-2 text-[15px] font-medium text-accent">
+                  <p className="text-accent flex items-center gap-2 text-[15px] font-medium">
                     {logo ? (
                       <Image
                         src={logo}
@@ -156,14 +153,14 @@ export function ExperienceSection({ experiences }: { experiences: Experience[] }
                         height={20}
                         sizes="20px"
                         loading="lazy"
-                        className="h-5 w-5 rounded border border-border-base object-contain"
+                        className="border-border-base h-5 w-5 rounded border object-contain"
                       />
                     ) : null}
                     {item.company}
                   </p>
                 </div>
 
-                <p className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-fg-subtle">
+                <p className="text-fg-subtle mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px]">
                   <span className="inline-flex items-center gap-1.5">
                     <CalendarIcon width={13} height={13} />
                     {formatDateRange(item.startDate, item.endDate)}
@@ -174,13 +171,13 @@ export function ExperienceSection({ experiences }: { experiences: Experience[] }
                       {item.location}
                     </span>
                   ) : null}
-                  <span className="rounded border border-border-base px-1.5 py-0.5 text-[11px] font-medium">
+                  <span className="border-border-base rounded border px-1.5 py-0.5 text-[11px] font-medium">
                     {item.employmentType}
                   </span>
                 </p>
 
                 {item.description ? (
-                  <p className="mt-3 max-w-2xl text-sm leading-relaxed text-fg-muted">
+                  <p className="text-fg-muted mt-3 max-w-2xl text-sm leading-relaxed">
                     {item.description}
                   </p>
                 ) : null}
@@ -190,7 +187,7 @@ export function ExperienceSection({ experiences }: { experiences: Experience[] }
                     {item.responsibilities.map((line, index) => (
                       <li
                         key={index}
-                        className="relative pl-4 text-sm leading-relaxed text-fg-muted before:absolute before:top-[0.6rem] before:left-0 before:h-1 before:w-1 before:rounded-full before:bg-border-strong"
+                        className="text-fg-muted before:bg-border-strong relative pl-4 text-sm leading-relaxed before:absolute before:top-[0.6rem] before:left-0 before:h-1 before:w-1 before:rounded-full"
                       >
                         {line}
                       </li>
@@ -201,15 +198,8 @@ export function ExperienceSection({ experiences }: { experiences: Experience[] }
                 {item.achievements.length > 0 ? (
                   <ul className="mt-3 max-w-2xl space-y-1.5">
                     {item.achievements.map((line, index) => (
-                      <li
-                        key={index}
-                        className="flex gap-2 text-sm leading-relaxed text-fg-muted"
-                      >
-                        <TrophyIcon
-                          width={13}
-                          height={13}
-                          className="mt-1 shrink-0 text-accent"
-                        />
+                      <li key={index} className="text-fg-muted flex gap-2 text-sm leading-relaxed">
+                        <TrophyIcon width={13} height={13} className="text-accent mt-1 shrink-0" />
                         {line}
                       </li>
                     ))}
@@ -231,7 +221,7 @@ export function ExperienceSection({ experiences }: { experiences: Experience[] }
                     href={certificate}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-medium text-accent hover:underline"
+                    className="text-accent mt-4 inline-flex items-center gap-1.5 text-[13px] font-medium hover:underline"
                   >
                     <DocumentIcon width={13} height={13} />
                     View certificate
@@ -250,15 +240,21 @@ export function ExperienceSection({ experiences }: { experiences: Experience[] }
 /* Projects                                                                    */
 /* ========================================================================== */
 
-export function ProjectCard({ project, priority = false }: { project: Project; priority?: boolean }) {
+export function ProjectCard({
+  project,
+  priority = false,
+}: {
+  project: Project;
+  priority?: boolean;
+}) {
   const cover = safeUrl(project.coverImageUrl);
   const github = safeUrl(project.githubUrl);
   const live = safeUrl(project.liveUrl);
 
   return (
-    <Card className="group flex flex-col overflow-hidden transition-colors duration-150 hover:border-border-strong">
+    <Card className="group hover:border-border-strong flex flex-col overflow-hidden transition-colors duration-150">
       {cover ? (
-        <div className="relative aspect-[16/9] overflow-hidden border-b border-border-base bg-bg-subtle">
+        <div className="border-border-base bg-bg-subtle relative aspect-[16/9] overflow-hidden border-b">
           <Image
             src={cover}
             alt=""
@@ -280,13 +276,13 @@ export function ProjectCard({ project, priority = false }: { project: Project; p
               {project.title}
             </Link>
           </h3>
-          <span className="shrink-0 rounded border border-border-base px-1.5 py-0.5 font-mono text-[10px] tracking-wide text-fg-subtle uppercase">
+          <span className="border-border-base text-fg-subtle shrink-0 rounded border px-1.5 py-0.5 font-mono text-[10px] tracking-wide uppercase">
             {project.category}
           </span>
         </div>
 
         {project.summary ? (
-          <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-fg-muted">
+          <p className="text-fg-muted mt-2 line-clamp-3 text-sm leading-relaxed">
             {project.summary}
           </p>
         ) : null}
@@ -307,7 +303,7 @@ export function ProjectCard({ project, priority = false }: { project: Project; p
         ) : null}
 
         <div className="mt-5 flex items-center gap-3 pt-1">
-          <span className="inline-flex items-center gap-1.5 text-[13px] font-medium text-accent">
+          <span className="text-accent inline-flex items-center gap-1.5 text-[13px] font-medium">
             Details
             <ArrowRightIcon
               width={13}
@@ -325,7 +321,7 @@ export function ProjectCard({ project, priority = false }: { project: Project; p
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`${project.title} source on GitHub`}
-                className="relative z-10 grid h-8 w-8 place-items-center rounded-md text-fg-subtle hover:bg-bg-subtle hover:text-fg"
+                className="text-fg-subtle hover:bg-bg-subtle hover:text-fg relative z-10 grid h-8 w-8 place-items-center rounded-md"
               >
                 <GitHubIcon width={15} height={15} />
               </TrackedLink>
@@ -338,7 +334,7 @@ export function ProjectCard({ project, priority = false }: { project: Project; p
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={`${project.title} live demo`}
-                className="relative z-10 grid h-8 w-8 place-items-center rounded-md text-fg-subtle hover:bg-bg-subtle hover:text-fg"
+                className="text-fg-subtle hover:bg-bg-subtle hover:text-fg relative z-10 grid h-8 w-8 place-items-center rounded-md"
               >
                 <ExternalLinkIcon width={15} height={15} />
               </TrackedLink>
@@ -383,7 +379,7 @@ export function ProjectsSection({
             <div className="mt-8">
               <Link
                 href="/projects"
-                className="inline-flex items-center gap-2 text-sm font-medium text-accent hover:underline"
+                className="text-accent inline-flex items-center gap-2 text-sm font-medium hover:underline"
               >
                 See all {totalCount} projects
                 <ArrowRightIcon width={14} height={14} />
@@ -416,27 +412,25 @@ export function EducationSection({ education }: { education: Education[] }) {
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
                     <h3 className="flex items-center gap-2 text-base font-semibold">
-                      <AcademicIcon width={16} height={16} className="shrink-0 text-accent" />
+                      <AcademicIcon width={16} height={16} className="text-accent shrink-0" />
                       {item.institution}
                     </h3>
-                    <p className="mt-1.5 text-sm font-medium text-fg-muted">
+                    <p className="text-fg-muted mt-1.5 text-sm font-medium">
                       {item.degree}
                       {item.field ? ` · ${item.field}` : ""}
                     </p>
                   </div>
 
-                  <div className="text-right text-[13px] text-fg-subtle">
+                  <div className="text-fg-subtle text-right text-[13px]">
                     <p>{formatDateRange(item.startDate, item.endDate)}</p>
                     {item.grade ? (
-                      <p className="mt-0.5 font-medium text-fg-muted">{item.grade}</p>
+                      <p className="text-fg-muted mt-0.5 font-medium">{item.grade}</p>
                     ) : null}
                   </div>
                 </div>
 
                 {item.description ? (
-                  <p className="mt-3 text-sm leading-relaxed text-fg-muted">
-                    {item.description}
-                  </p>
+                  <p className="text-fg-muted mt-3 text-sm leading-relaxed">{item.description}</p>
                 ) : null}
 
                 {item.achievements.length > 0 ? (
@@ -444,7 +438,7 @@ export function EducationSection({ education }: { education: Education[] }) {
                     {item.achievements.map((line, index) => (
                       <li
                         key={index}
-                        className="relative pl-4 text-sm leading-relaxed text-fg-muted before:absolute before:top-[0.6rem] before:left-0 before:h-1 before:w-1 before:rounded-full before:bg-border-strong"
+                        className="text-fg-muted before:bg-border-strong relative pl-4 text-sm leading-relaxed before:absolute before:top-[0.6rem] before:left-0 before:h-1 before:w-1 before:rounded-full"
                       >
                         {line}
                       </li>
@@ -464,11 +458,7 @@ export function EducationSection({ education }: { education: Education[] }) {
 /* Certifications                                                              */
 /* ========================================================================== */
 
-export function CertificationsSection({
-  certifications,
-}: {
-  certifications: Certification[];
-}) {
+export function CertificationsSection({ certifications }: { certifications: Certification[] }) {
   return (
     <Section id="certifications" eyebrow="06 / Certifications" title="Certifications">
       {certifications.length === 0 ? (
@@ -489,15 +479,15 @@ export function CertificationsSection({
                     <CertificateIcon
                       width={18}
                       height={18}
-                      className="mt-0.5 shrink-0 text-accent"
+                      className="text-accent mt-0.5 shrink-0"
                     />
                     <div className="min-w-0">
                       <h3 className="text-[15px] font-semibold">{item.name}</h3>
-                      <p className="mt-1 text-sm text-fg-muted">{item.issuer}</p>
+                      <p className="text-fg-muted mt-1 text-sm">{item.issuer}</p>
                     </div>
                   </div>
 
-                  <dl className="mt-4 space-y-1 text-[13px] text-fg-subtle">
+                  <dl className="text-fg-subtle mt-4 space-y-1 text-[13px]">
                     {item.issueDate ? (
                       <div className="flex gap-2">
                         <dt className="font-medium">Issued</dt>
@@ -519,7 +509,7 @@ export function CertificationsSection({
                           href={credential}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-accent hover:underline"
+                          className="text-accent inline-flex items-center gap-1.5 text-[13px] font-medium hover:underline"
                         >
                           <ExternalLinkIcon width={13} height={13} />
                           Verify
@@ -530,7 +520,7 @@ export function CertificationsSection({
                           href={file}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-accent hover:underline"
+                          className="text-accent inline-flex items-center gap-1.5 text-[13px] font-medium hover:underline"
                         >
                           <DocumentIcon width={13} height={13} />
                           Certificate
@@ -569,29 +559,27 @@ export function AchievementsSection({ achievements }: { achievements: Achievemen
             return (
               <li
                 key={item.id}
-                className="flex gap-4 rounded-xl border border-border-base bg-bg-raised p-5"
+                className="border-border-base bg-bg-raised flex gap-4 rounded-xl border p-5"
               >
-                <TrophyIcon width={18} height={18} className="mt-0.5 shrink-0 text-accent" />
+                <TrophyIcon width={18} height={18} className="text-accent mt-0.5 shrink-0" />
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
                     <h3 className="text-[15px] font-semibold">{item.title}</h3>
                     {item.date ? (
-                      <span className="text-[13px] text-fg-subtle">
+                      <span className="text-fg-subtle text-[13px]">
                         {formatFullDate(item.date)}
                       </span>
                     ) : null}
                   </div>
 
                   {item.organization ? (
-                    <p className="mt-1 text-[13px] font-medium text-fg-muted">
+                    <p className="text-fg-muted mt-1 text-[13px] font-medium">
                       {item.organization}
                     </p>
                   ) : null}
 
                   {item.description ? (
-                    <p className="mt-2 text-sm leading-relaxed text-fg-muted">
-                      {item.description}
-                    </p>
+                    <p className="text-fg-muted mt-2 text-sm leading-relaxed">{item.description}</p>
                   ) : null}
 
                   {url || file ? (
@@ -601,7 +589,7 @@ export function AchievementsSection({ achievements }: { achievements: Achievemen
                           href={url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-accent hover:underline"
+                          className="text-accent inline-flex items-center gap-1.5 text-[13px] font-medium hover:underline"
                         >
                           <ExternalLinkIcon width={13} height={13} />
                           Link
@@ -612,7 +600,7 @@ export function AchievementsSection({ achievements }: { achievements: Achievemen
                           href={file}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-[13px] font-medium text-accent hover:underline"
+                          className="text-accent inline-flex items-center gap-1.5 text-[13px] font-medium hover:underline"
                         >
                           <DocumentIcon width={13} height={13} />
                           Document

@@ -54,23 +54,23 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: number)
   return (
     <div
       className={cn(
-        "pointer-events-auto flex w-full max-w-sm items-start gap-2.5 rounded-lg border px-4 py-3 text-sm shadow-raised",
+        "shadow-raised pointer-events-auto flex w-full max-w-sm items-start gap-2.5 rounded-lg border px-4 py-3 text-sm",
         toast.tone === "success"
           ? "border-border-base bg-success-soft text-fg"
           : "border-border-base bg-danger-soft text-fg",
       )}
     >
       {toast.tone === "success" ? (
-        <CheckIcon width={16} height={16} className="mt-0.5 shrink-0 text-success" />
+        <CheckIcon width={16} height={16} className="text-success mt-0.5 shrink-0" />
       ) : (
-        <AlertIcon width={16} height={16} className="mt-0.5 shrink-0 text-danger" />
+        <AlertIcon width={16} height={16} className="text-danger mt-0.5 shrink-0" />
       )}
       <span className="flex-1">{toast.message}</span>
       <button
         type="button"
         aria-label="Dismiss"
         onClick={() => onDismiss(toast.id)}
-        className="-mr-1 shrink-0 rounded p-0.5 text-fg-subtle hover:text-fg"
+        className="text-fg-subtle hover:text-fg -mr-1 shrink-0 rounded p-0.5"
       >
         <CloseIcon width={14} height={14} />
       </button>

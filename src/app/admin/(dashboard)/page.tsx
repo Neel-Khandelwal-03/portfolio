@@ -73,13 +73,13 @@ export default async function DashboardPage() {
           <Link
             key={label}
             href={href}
-            className="rounded-xl border border-border-base bg-bg-raised p-5 transition-colors duration-150 hover:border-border-strong"
+            className="border-border-base bg-bg-raised hover:border-border-strong rounded-xl border p-5 transition-colors duration-150"
           >
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-[13px] font-medium text-fg-muted">{label}</p>
+                <p className="text-fg-muted text-[13px] font-medium">{label}</p>
                 <p className="mt-2 text-2xl font-semibold tabular-nums">{value}</p>
-                <p className="mt-1 text-[13px] text-fg-subtle">{note}</p>
+                <p className="text-fg-subtle mt-1 text-[13px]">{note}</p>
               </div>
               <Icon width={18} height={18} className="text-accent" />
             </div>
@@ -88,7 +88,7 @@ export default async function DashboardPage() {
       </div>
 
       <div className="mt-6 grid gap-3 lg:grid-cols-2">
-        <div className="rounded-xl border border-border-base bg-bg-raised p-5">
+        <div className="border-border-base bg-bg-raised rounded-xl border p-5">
           <h2 className="text-sm font-semibold">Site status</h2>
           <dl className="mt-4 space-y-3 text-[13px]">
             <div className="flex justify-between gap-4">
@@ -120,13 +120,13 @@ export default async function DashboardPage() {
           </dl>
         </div>
 
-        <div className="rounded-xl border border-border-base bg-bg-raised p-5">
+        <div className="border-border-base bg-bg-raised rounded-xl border p-5">
           <h2 className="text-sm font-semibold">Messages</h2>
           <p className="mt-4 text-2xl font-semibold tabular-nums">{stats.unreadMessages}</p>
-          <p className="mt-1 text-[13px] text-fg-subtle">unread from the contact form</p>
+          <p className="text-fg-subtle mt-1 text-[13px]">unread from the contact form</p>
           <Link
             href="/admin/messages"
-            className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-medium text-accent hover:underline"
+            className="text-accent mt-4 inline-flex items-center gap-1.5 text-[13px] font-medium hover:underline"
           >
             <MailIcon width={14} height={14} />
             Open inbox
@@ -134,12 +134,12 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      <div className="mt-6 rounded-xl border border-border-base bg-bg-raised p-5">
+      <div className="border-border-base bg-bg-raised mt-6 rounded-xl border p-5">
         <h2 className="text-sm font-semibold">How saving works</h2>
-        <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-fg-muted">
-          Saving here writes to the database and immediately clears the cache tags for whatever
-          you changed. The public site regenerates the affected pages on the next request — no
-          rebuild, no redeploy, and no code change is ever needed for content.
+        <p className="text-fg-muted mt-2 max-w-2xl text-[13px] leading-relaxed">
+          Saving here writes to the database and immediately clears the cache tags for whatever you
+          changed. The public site regenerates the affected pages on the next request — no rebuild,
+          no redeploy, and no code change is ever needed for content.
         </p>
       </div>
     </>

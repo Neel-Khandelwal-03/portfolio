@@ -21,7 +21,7 @@ function SubmitButton() {
     <button
       type="submit"
       disabled={pending}
-      className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-accent text-sm font-medium text-accent-fg transition-colors duration-150 hover:bg-accent-hover disabled:opacity-60"
+      className="bg-accent text-accent-fg hover:bg-accent-hover inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg text-sm font-medium transition-colors duration-150 disabled:opacity-60"
     >
       {pending ? (
         <>
@@ -46,9 +46,9 @@ export function LoginForm({ next }: { next: string }) {
         {state.error ? (
           <div
             role="alert"
-            className="flex items-start gap-2.5 rounded-lg border border-border-base bg-danger-soft p-3 text-[13px]"
+            className="border-border-base bg-danger-soft flex items-start gap-2.5 rounded-lg border p-3 text-[13px]"
           >
-            <AlertIcon width={15} height={15} className="mt-0.5 shrink-0 text-danger" />
+            <AlertIcon width={15} height={15} className="text-danger mt-0.5 shrink-0" />
             <span>{state.error}</span>
           </div>
         ) : null}
@@ -70,7 +70,7 @@ export function LoginForm({ next }: { next: string }) {
             placeholder="you@example.com"
           />
           {state.fieldErrors?.email ? (
-            <p id="email-error" className="mt-1.5 text-[13px] text-danger">
+            <p id="email-error" className="text-danger mt-1.5 text-[13px]">
               {state.fieldErrors.email}
             </p>
           ) : null}
@@ -92,7 +92,7 @@ export function LoginForm({ next }: { next: string }) {
             placeholder="••••••••••••"
           />
           {state.fieldErrors?.password ? (
-            <p id="password-error" className="mt-1.5 text-[13px] text-danger">
+            <p id="password-error" className="text-danger mt-1.5 text-[13px]">
               {state.fieldErrors.password}
             </p>
           ) : null}

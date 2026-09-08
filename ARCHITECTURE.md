@@ -5,33 +5,33 @@ no deployment config, no git history) and the local toolchain._
 
 ## Environment audit findings
 
-| Check | Result |
-| --- | --- |
-| Existing source | None — directory was empty |
-| Git | Not initialised (initialised by `create-next-app`) |
-| Deployment config | None |
-| Node / npm | v24.12.0 / 11.6.2 |
-| PostgreSQL | 18.4 installed locally (scoop), cluster present, started for development |
-| Docker | Installed, daemon not running — not required by this design |
-| Vercel CLI | 59.10.0 installed, **not authenticated** |
-| GitHub CLI | Not installed |
+| Check             | Result                                                                   |
+| ----------------- | ------------------------------------------------------------------------ |
+| Existing source   | None — directory was empty                                               |
+| Git               | Not initialised (initialised by `create-next-app`)                       |
+| Deployment config | None                                                                     |
+| Node / npm        | v24.12.0 / 11.6.2                                                        |
+| PostgreSQL        | 18.4 installed locally (scoop), cluster present, started for development |
+| Docker            | Installed, daemon not running — not required by this design              |
+| Vercel CLI        | 59.10.0 installed, **not authenticated**                                 |
+| GitHub CLI        | Not installed                                                            |
 
 Nothing was reusable, so the project is a clean build.
 
 ## Chosen stack
 
-| Layer | Choice | Why |
-| --- | --- | --- |
-| Framework | Next.js 16 (App Router, React 19 Server Components) | Server-first rendering, streaming, tag-based revalidation, first-class Vercel deploy |
-| Language | TypeScript (strict) | Type safety across the DB → service → UI boundary |
-| Styling | Tailwind CSS v4 | Zero-runtime, CSS-first config, no CSS-in-JS bundle cost |
-| ORM | Drizzle ORM + drizzle-kit | Thin, typed SQL. No heavy runtime, no query-engine binary |
-| Database | PostgreSQL 18 | Relational content model with real constraints |
-| DB driver | `postgres` (postgres.js) | Single driver that works against local PG, Supabase, Neon, Railway |
-| Validation | Zod 4 | One schema shared by server actions, API routes and forms |
-| Auth | Custom: `node:crypto` scrypt + DB-backed opaque sessions | No dependency, OWASP-approved KDF, server-revocable sessions |
-| File storage | Pluggable adapter: Vercel Blob (prod) / local filesystem (dev) | Binaries never touch Postgres; dev works with no cloud account |
-| Deployment | Vercel | Native fit for Next.js; CLI already present |
+| Layer        | Choice                                                         | Why                                                                                  |
+| ------------ | -------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Framework    | Next.js 16 (App Router, React 19 Server Components)            | Server-first rendering, streaming, tag-based revalidation, first-class Vercel deploy |
+| Language     | TypeScript (strict)                                            | Type safety across the DB → service → UI boundary                                    |
+| Styling      | Tailwind CSS v4                                                | Zero-runtime, CSS-first config, no CSS-in-JS bundle cost                             |
+| ORM          | Drizzle ORM + drizzle-kit                                      | Thin, typed SQL. No heavy runtime, no query-engine binary                            |
+| Database     | PostgreSQL 18                                                  | Relational content model with real constraints                                       |
+| DB driver    | `postgres` (postgres.js)                                       | Single driver that works against local PG, Supabase, Neon, Railway                   |
+| Validation   | Zod 4                                                          | One schema shared by server actions, API routes and forms                            |
+| Auth         | Custom: `node:crypto` scrypt + DB-backed opaque sessions       | No dependency, OWASP-approved KDF, server-revocable sessions                         |
+| File storage | Pluggable adapter: Vercel Blob (prod) / local filesystem (dev) | Binaries never touch Postgres; dev works with no cloud account                       |
+| Deployment   | Vercel                                                         | Native fit for Next.js; CLI already present                                          |
 
 ### Dependencies and their justification
 

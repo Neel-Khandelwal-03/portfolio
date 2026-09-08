@@ -3,12 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 
 import { useToast } from "@/components/admin/toast";
-import {
-  ChevronDownIcon,
-  ChevronUpIcon,
-  SpinnerIcon,
-  TrashIcon,
-} from "@/components/ui/icons";
+import { ChevronDownIcon, ChevronUpIcon, SpinnerIcon, TrashIcon } from "@/components/ui/icons";
 import type { ActionState } from "@/lib/action-state";
 import { cn } from "@/lib/utils";
 
@@ -82,7 +77,7 @@ export function DeleteButton({
         onClick={() => setOpen(true)}
         aria-label={`Delete ${label}`}
         className={cn(
-          "inline-flex items-center gap-1.5 rounded-lg text-[13px] font-medium text-fg-subtle transition-colors duration-150 hover:bg-danger-soft hover:text-danger",
+          "text-fg-subtle hover:bg-danger-soft hover:text-danger inline-flex items-center gap-1.5 rounded-lg text-[13px] font-medium transition-colors duration-150",
           compact ? "h-8 w-8 justify-center" : "h-8 px-2.5",
         )}
       >
@@ -105,14 +100,13 @@ export function DeleteButton({
             onClick={() => setOpen(false)}
             className="absolute inset-0 h-full w-full cursor-default bg-black/50"
           />
-          <div className="relative w-full max-w-md rounded-xl border border-border-base bg-bg-raised p-6 shadow-raised">
+          <div className="border-border-base bg-bg-raised shadow-raised relative w-full max-w-md rounded-xl border p-6">
             <h2 id={`del-${id}-title`} className="text-base font-semibold">
               Delete this {entity.toLowerCase()}?
             </h2>
-            <p id={`del-${id}-desc`} className="mt-2 text-sm text-fg-muted">
-              Are you sure you want to delete{" "}
-              <span className="font-medium text-fg">{label}</span>? This cannot be undone, and it
-              will disappear from the public site.
+            <p id={`del-${id}-desc`} className="text-fg-muted mt-2 text-sm">
+              Are you sure you want to delete <span className="text-fg font-medium">{label}</span>?
+              This cannot be undone, and it will disappear from the public site.
             </p>
 
             <div className="mt-6 flex justify-end gap-3">
@@ -120,7 +114,7 @@ export function DeleteButton({
                 type="button"
                 onClick={() => setOpen(false)}
                 disabled={pending}
-                className="inline-flex h-10 items-center rounded-lg border border-border-base px-4 text-sm font-medium hover:bg-bg-subtle disabled:opacity-60"
+                className="border-border-base hover:bg-bg-subtle inline-flex h-10 items-center rounded-lg border px-4 text-sm font-medium disabled:opacity-60"
               >
                 Cancel
               </button>
@@ -129,7 +123,7 @@ export function DeleteButton({
                 type="button"
                 onClick={confirm}
                 disabled={pending}
-                className="inline-flex h-10 items-center gap-2 rounded-lg bg-danger px-4 text-sm font-medium text-white hover:bg-danger-hover disabled:opacity-60"
+                className="bg-danger hover:bg-danger-hover inline-flex h-10 items-center gap-2 rounded-lg px-4 text-sm font-medium text-white disabled:opacity-60"
               >
                 {pending ? <SpinnerIcon width={15} height={15} className="animate-spin" /> : null}
                 Delete
@@ -221,7 +215,7 @@ export function AdminRow({
   return (
     <li
       className={cn(
-        "flex flex-wrap items-center gap-3 rounded-xl border border-border-base bg-bg-raised p-4",
+        "border-border-base bg-bg-raised flex flex-wrap items-center gap-3 rounded-xl border p-4",
         className,
       )}
     >

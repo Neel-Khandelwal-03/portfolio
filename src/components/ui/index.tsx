@@ -63,10 +63,7 @@ export function ButtonLink({
 export function Card({ className, ...props }: ComponentPropsWithoutRef<"div">) {
   return (
     <div
-      className={cn(
-        "rounded-xl border border-border-base bg-bg-raised shadow-card",
-        className,
-      )}
+      className={cn("border-border-base bg-bg-raised shadow-card rounded-xl border", className)}
       {...props}
     />
   );
@@ -99,7 +96,7 @@ export function Badge({
 /** Small monospace chip used for technology lists. */
 export function TechChip({ children }: { children: ReactNode }) {
   return (
-    <span className="rounded-md border border-border-base bg-bg-subtle px-2 py-1 font-mono text-[11px] leading-none text-fg-muted">
+    <span className="border-border-base bg-bg-subtle text-fg-muted rounded-md border px-2 py-1 font-mono text-[11px] leading-none">
       {children}
     </span>
   );
@@ -140,12 +137,15 @@ export function Section({
     <Tag
       id={id}
       aria-labelledby={`${id}-heading`}
-      className={cn("content-auto scroll-mt-24 border-t border-border-base py-16 sm:py-20", className)}
+      className={cn(
+        "content-auto border-border-base scroll-mt-24 border-t py-16 sm:py-20",
+        className,
+      )}
     >
       <Container>
         <div className="reveal">
           {eyebrow ? (
-            <p className="mb-3 font-mono text-[11px] font-medium tracking-[0.16em] text-accent uppercase">
+            <p className="text-accent mb-3 font-mono text-[11px] font-medium tracking-[0.16em] uppercase">
               {eyebrow}
             </p>
           ) : null}
@@ -153,7 +153,7 @@ export function Section({
             {title}
           </h2>
           {description ? (
-            <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-fg-muted">
+            <p className="text-fg-muted mt-3 max-w-2xl text-[15px] leading-relaxed">
               {description}
             </p>
           ) : null}
@@ -178,10 +178,10 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-dashed border-border-strong bg-bg-subtle px-6 py-12 text-center">
-      <p className="text-sm font-medium text-fg">{title}</p>
+    <div className="border-border-strong bg-bg-subtle rounded-xl border border-dashed px-6 py-12 text-center">
+      <p className="text-fg text-sm font-medium">{title}</p>
       {description ? (
-        <p className="mx-auto mt-1.5 max-w-md text-sm text-fg-muted">{description}</p>
+        <p className="text-fg-muted mx-auto mt-1.5 max-w-md text-sm">{description}</p>
       ) : null}
       {action ? <div className="mt-5 flex justify-center">{action}</div> : null}
     </div>
@@ -191,16 +191,13 @@ export function EmptyState({
 /** Skeleton block used inside Suspense fallbacks. */
 export function Skeleton({ className }: { className?: string }) {
   return (
-    <div
-      aria-hidden
-      className={cn("animate-pulse rounded-md bg-border-base/70", className)}
-    />
+    <div aria-hidden className={cn("bg-border-base/70 animate-pulse rounded-md", className)} />
   );
 }
 
 export function SectionSkeleton({ rows = 3 }: { rows?: number }) {
   return (
-    <div className="border-t border-border-base py-16 sm:py-20">
+    <div className="border-border-base border-t py-16 sm:py-20">
       <Container>
         <Skeleton className="h-3 w-24" />
         <Skeleton className="mt-4 h-8 w-56" />
@@ -232,7 +229,7 @@ export function Prose({ text, className }: { text: string; className?: string })
   if (paragraphs.length === 0) return null;
 
   return (
-    <div className={cn("space-y-4 text-[15px] leading-relaxed text-fg-muted", className)}>
+    <div className={cn("text-fg-muted space-y-4 text-[15px] leading-relaxed", className)}>
       {paragraphs.map((paragraph, index) => (
         <p key={index}>{paragraph}</p>
       ))}

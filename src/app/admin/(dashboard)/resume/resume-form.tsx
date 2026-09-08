@@ -3,7 +3,13 @@
 import { useActionState, useTransition } from "react";
 
 import { removeResume, saveResume } from "@/app/admin/actions";
-import { FileField, FormCard, FormError, SubmitButton, useActionToast } from "@/components/admin/form";
+import {
+  FileField,
+  FormCard,
+  FormError,
+  SubmitButton,
+  useActionToast,
+} from "@/components/admin/form";
 import { useToast } from "@/components/admin/toast";
 import { IDLE, type ActionState } from "@/lib/action-state";
 
@@ -43,7 +49,7 @@ export function ResumeForm({ currentUrl }: { currentUrl: string | null }) {
               type="button"
               onClick={remove}
               disabled={removing}
-              className="inline-flex h-10 items-center rounded-lg border border-border-base px-4 text-sm font-medium text-danger hover:bg-danger-soft disabled:opacity-60"
+              className="border-border-base text-danger hover:bg-danger-soft inline-flex h-10 items-center rounded-lg border px-4 text-sm font-medium disabled:opacity-60"
             >
               {removing ? "Removing" : "Remove resume"}
             </button>

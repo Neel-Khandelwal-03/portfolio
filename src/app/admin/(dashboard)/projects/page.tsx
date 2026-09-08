@@ -18,7 +18,7 @@ export default async function ProjectsAdminPage() {
         action={
           <Link
             href="/admin/projects/new"
-            className="inline-flex h-10 items-center gap-2 rounded-lg bg-accent px-4 text-sm font-medium text-accent-fg hover:bg-accent-hover"
+            className="bg-accent text-accent-fg hover:bg-accent-hover inline-flex h-10 items-center gap-2 rounded-lg px-4 text-sm font-medium"
           >
             <PlusIcon width={15} height={15} />
             New project
@@ -33,7 +33,7 @@ export default async function ProjectsAdminPage() {
           action={
             <Link
               href="/admin/projects/new"
-              className="inline-flex h-10 items-center gap-2 rounded-lg bg-accent px-4 text-sm font-medium text-accent-fg hover:bg-accent-hover"
+              className="bg-accent text-accent-fg hover:bg-accent-hover inline-flex h-10 items-center gap-2 rounded-lg px-4 text-sm font-medium"
             >
               <PlusIcon width={15} height={15} />
               New project
@@ -56,7 +56,7 @@ export default async function ProjectsAdminPage() {
                 <div className="flex flex-wrap items-center gap-2">
                   <Link
                     href={`/admin/projects/${project.id}`}
-                    className="text-sm font-semibold hover:text-accent"
+                    className="hover:text-accent text-sm font-semibold"
                   >
                     {project.title}
                   </Link>
@@ -67,7 +67,7 @@ export default async function ProjectsAdminPage() {
                     <Badge tone="warning">Draft</Badge>
                   )}
                 </div>
-                <p className="mt-1 truncate font-mono text-[12px] text-fg-subtle">
+                <p className="text-fg-subtle mt-1 truncate font-mono text-[12px]">
                   /projects/{project.slug} · {project.category}
                 </p>
               </div>
@@ -78,7 +78,7 @@ export default async function ProjectsAdminPage() {
                     href={`/projects/${project.slug}`}
                     target="_blank"
                     aria-label={`View ${project.title} on the public site`}
-                    className="grid h-8 w-8 place-items-center rounded-lg text-fg-subtle hover:bg-bg-subtle hover:text-fg"
+                    className="text-fg-subtle hover:bg-bg-subtle hover:text-fg grid h-8 w-8 place-items-center rounded-lg"
                   >
                     <ExternalLinkIcon width={14} height={14} />
                   </Link>
@@ -86,7 +86,7 @@ export default async function ProjectsAdminPage() {
                 <Link
                   href={`/admin/projects/${project.id}`}
                   aria-label={`Edit ${project.title}`}
-                  className="grid h-8 w-8 place-items-center rounded-lg text-fg-subtle hover:bg-bg-subtle hover:text-fg"
+                  className="text-fg-subtle hover:bg-bg-subtle hover:text-fg grid h-8 w-8 place-items-center rounded-lg"
                 >
                   <EditIcon width={14} height={14} />
                 </Link>

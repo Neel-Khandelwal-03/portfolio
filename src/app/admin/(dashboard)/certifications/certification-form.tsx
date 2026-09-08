@@ -105,7 +105,7 @@ export function CertificationForm({ certification }: { certification?: Certifica
         <SubmitButton>{certification ? "Save certification" : "Create certification"}</SubmitButton>
         <Link
           href="/admin/certifications"
-          className="inline-flex h-10 items-center rounded-lg border border-border-base px-4 text-sm font-medium hover:bg-bg-subtle"
+          className="border-border-base hover:bg-bg-subtle inline-flex h-10 items-center rounded-lg border px-4 text-sm font-medium"
         >
           Cancel
         </Link>

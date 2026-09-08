@@ -39,18 +39,18 @@ export function Field({
       <label htmlFor={htmlFor} className="mb-1.5 block text-[13px] font-medium">
         {label}
         {required ? (
-          <span className="ml-1 text-danger" aria-hidden>
+          <span className="text-danger ml-1" aria-hidden>
             *
           </span>
         ) : null}
       </label>
       {children}
       {error ? (
-        <p id={`${htmlFor}-error`} className="mt-1.5 text-[13px] text-danger">
+        <p id={`${htmlFor}-error`} className="text-danger mt-1.5 text-[13px]">
           {error}
         </p>
       ) : hint ? (
-        <p id={`${htmlFor}-hint`} className="mt-1.5 text-[13px] text-fg-subtle">
+        <p id={`${htmlFor}-hint`} className="text-fg-subtle mt-1.5 text-[13px]">
           {hint}
         </p>
       ) : null}
@@ -77,7 +77,14 @@ export function TextField({
   ...props
 }: BaseProps & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
-    <Field label={label} htmlFor={name} hint={hint} error={error} required={required} className={className}>
+    <Field
+      label={label}
+      htmlFor={name}
+      hint={hint}
+      error={error}
+      required={required}
+      className={className}
+    >
       <input
         id={name}
         name={name}
@@ -102,7 +109,14 @@ export function TextArea({
   ...props
 }: BaseProps & React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
-    <Field label={label} htmlFor={name} hint={hint} error={error} required={required} className={className}>
+    <Field
+      label={label}
+      htmlFor={name}
+      hint={hint}
+      error={error}
+      required={required}
+      className={className}
+    >
       <textarea
         id={name}
         name={name}
@@ -131,7 +145,14 @@ export function SelectField({
     options: { value: string | number; label: string }[];
   }) {
   return (
-    <Field label={label} htmlFor={name} hint={hint} error={error} required={required} className={className}>
+    <Field
+      label={label}
+      htmlFor={name}
+      hint={hint}
+      error={error}
+      required={required}
+      className={className}
+    >
       <select
         id={name}
         name={name}
@@ -168,13 +189,13 @@ export function CheckboxField({
         name={name}
         type="checkbox"
         defaultChecked={defaultChecked}
-        className="mt-0.5 h-4 w-4 shrink-0 rounded border-border-strong accent-[var(--accent)]"
+        className="border-border-strong mt-0.5 h-4 w-4 shrink-0 rounded accent-[var(--accent)]"
       />
       <div>
         <label htmlFor={name} className="text-[13px] font-medium">
           {label}
         </label>
-        {hint ? <p className="mt-0.5 text-[13px] text-fg-subtle">{hint}</p> : null}
+        {hint ? <p className="text-fg-subtle mt-0.5 text-[13px]">{hint}</p> : null}
       </div>
     </div>
   );
@@ -261,7 +282,7 @@ export function FileField({
       <div className="flex flex-wrap items-center gap-3">
         <label
           htmlFor={inputId}
-          className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-lg border border-border-base bg-bg px-3 text-[13px] font-medium text-fg hover:border-border-strong hover:bg-bg-subtle"
+          className="border-border-base bg-bg text-fg hover:border-border-strong hover:bg-bg-subtle inline-flex h-9 cursor-pointer items-center gap-2 rounded-lg border px-3 text-[13px] font-medium"
         >
           {busy ? (
             <SpinnerIcon width={14} height={14} className="animate-spin" />
@@ -285,14 +306,14 @@ export function FileField({
               href={value}
               target="_blank"
               rel="noopener noreferrer"
-              className="max-w-[220px] truncate text-[13px] text-accent hover:underline"
+              className="text-accent max-w-[220px] truncate text-[13px] hover:underline"
             >
               {value.split("/").pop()}
             </a>
             <button
               type="button"
               onClick={() => setValue("")}
-              className="text-[13px] font-medium text-danger hover:underline"
+              className="text-danger text-[13px] font-medium hover:underline"
             >
               Remove
             </button>
@@ -308,14 +329,14 @@ export function FileField({
         <img
           src={value}
           alt=""
-          className="mt-3 h-24 w-auto rounded-lg border border-border-base object-contain"
+          className="border-border-base mt-3 h-24 w-auto rounded-lg border object-contain"
         />
       ) : null}
 
       {uploadError || error ? (
-        <p className="mt-1.5 text-[13px] text-danger">{uploadError ?? error}</p>
+        <p className="text-danger mt-1.5 text-[13px]">{uploadError ?? error}</p>
       ) : hint ? (
-        <p className="mt-1.5 text-[13px] text-fg-subtle">{hint}</p>
+        <p className="text-fg-subtle mt-1.5 text-[13px]">{hint}</p>
       ) : null}
     </div>
   );
@@ -331,13 +352,13 @@ export function FormError({ state }: { state: ActionState }) {
   return (
     <div
       role="alert"
-      className="flex items-start gap-2.5 rounded-lg border border-border-base bg-danger-soft p-3.5 text-sm"
+      className="border-border-base bg-danger-soft flex items-start gap-2.5 rounded-lg border p-3.5 text-sm"
     >
-      <AlertIcon width={16} height={16} className="mt-0.5 shrink-0 text-danger" />
+      <AlertIcon width={16} height={16} className="text-danger mt-0.5 shrink-0" />
       <div>
         <p>{state.message}</p>
         {state.fieldErrors?._form ? (
-          <p className="mt-1 text-[13px] text-fg-muted">{state.fieldErrors._form}</p>
+          <p className="text-fg-muted mt-1 text-[13px]">{state.fieldErrors._form}</p>
         ) : null}
       </div>
     </div>
@@ -358,7 +379,7 @@ export function SubmitButton({
       type="submit"
       disabled={pending}
       className={cn(
-        "inline-flex h-10 items-center justify-center gap-2 rounded-lg bg-accent px-4 text-sm font-medium text-accent-fg transition-colors duration-150 hover:bg-accent-hover disabled:opacity-60",
+        "bg-accent text-accent-fg hover:bg-accent-hover inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-sm font-medium transition-colors duration-150 disabled:opacity-60",
         className,
       )}
     >
@@ -387,15 +408,9 @@ export function useActionToast(state: ActionState) {
   }, [state.key, state.status, state.message, state.fieldErrors, toast]);
 }
 
-export function FormCard({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
+export function FormCard({ children, className }: { children: ReactNode; className?: string }) {
   return (
-    <div className={cn("rounded-xl border border-border-base bg-bg-raised p-5 sm:p-6", className)}>
+    <div className={cn("border-border-base bg-bg-raised rounded-xl border p-5 sm:p-6", className)}>
       {children}
     </div>
   );
@@ -411,9 +426,9 @@ export function FormSection({
   children: ReactNode;
 }) {
   return (
-    <section className="border-t border-border-base pt-6 first:border-0 first:pt-0">
+    <section className="border-border-base border-t pt-6 first:border-0 first:pt-0">
       <h2 className="text-sm font-semibold">{title}</h2>
-      {description ? <p className="mt-1 text-[13px] text-fg-subtle">{description}</p> : null}
+      {description ? <p className="text-fg-subtle mt-1 text-[13px]">{description}</p> : null}
       <div className="mt-4 space-y-4">{children}</div>
     </section>
   );
