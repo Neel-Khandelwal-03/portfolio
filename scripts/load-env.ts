@@ -30,7 +30,10 @@ export function loadEnv(cwd = process.cwd()): void {
         value = value.slice(1, -1);
       }
 
-      process.env[key] = value;
+      // A variable already present in the real environment wins, so a
+      // one-off `DATABASE_URL=... npm run db:migrate` targets what you asked
+      // for rather than silently being overwritten by the file.
+      if (process.env[key] === undefined) process.env[key] = value;
     }
   }
 }
