@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import type { ReactNode } from "react";
 
 import { ThemeScript } from "@/components/theme-script";
@@ -16,6 +16,22 @@ const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-inter",
+});
+
+/**
+ * Monospace carries the technical metadata — section numbers, dates,
+ * technologies, panel labels. A real mono face rather than the system stack,
+ * because the system default differs wildly across platforms and this text is
+ * a deliberate part of the visual identity.
+ *
+ * A single weight is requested: uppercase mono at 400 with wide tracking reads
+ * as a label already, and the second weight would double the download.
+ */
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400"],
+  variable: "--font-mono-face",
 });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -60,7 +76,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0b0e14" },
+    { media: "(prefers-color-scheme: dark)", color: "#080a0f" },
   ],
   colorScheme: "light dark",
   width: "device-width",
@@ -69,7 +85,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className={inter.variable} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${mono.variable}`} suppressHydrationWarning>
       <head>
         <ThemeScript />
       </head>

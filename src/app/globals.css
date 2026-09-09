@@ -4,32 +4,44 @@
    so there is no flash of the wrong theme on first load. */
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* -------------------------------------------------------------------------- */
+/* ========================================================================== */
 /* Design tokens                                                               */
-/* -------------------------------------------------------------------------- */
+/*                                                                             */
+/* Every token the admin already uses keeps its name, so the CMS is unaffected  */
+/* by the public redesign. New tokens are additive.                            */
+/* ========================================================================== */
 
 :root {
-  /* Surfaces */
+  /* -- Surfaces -----------------------------------------------------------
+     Four steps rather than two, so cards, insets and the page can sit at
+     genuinely different elevations without resorting to shadows. */
   --bg: #ffffff;
-  --bg-subtle: #f7f8fa;
+  --bg-subtle: #f6f7f9;
   --bg-raised: #ffffff;
-  --border: #e3e6ea;
-  --border-strong: #cbd2da;
+  --bg-sunken: #eef0f4;
+  --bg-invert: #101319;
 
-  /* Text — every value below clears WCAG AA (4.5:1) on --bg, including
-     --fg-subtle, which is used at 12-13px for metadata and must not be
-     treated as "large text". */
-  --fg: #14181f;
-  --fg-muted: #59616e;
+  --border: #e4e7ec;
+  --border-strong: #c9d0d9;
+  /* A hairline that reads as a rule rather than a box edge. */
+  --border-hair: #edeff3;
+
+  /* -- Text ---------------------------------------------------------------
+     Every value clears WCAG AA (4.5:1) on --bg, including --fg-subtle, which
+     is used at 12-13px for metadata and must not be treated as large text. */
+  --fg: #0d1117;
+  --fg-muted: #545c69;
   --fg-subtle: #6b7280;
+  --fg-invert: #f7f8fa;
 
-  /* Accent */
+  /* -- Accent -------------------------------------------------------------- */
   --accent: #1d4ed8;
-  --accent-hover: #1e40af;
+  --accent-hover: #1a3fb0;
   --accent-soft: #eef2ff;
+  --accent-line: #c7d2fe;
   --accent-fg: #ffffff;
 
-  /* Status */
+  /* -- Status -------------------------------------------------------------- */
   --success: #146c43;
   --success-soft: #e8f5ee;
   --danger: #b42318;
@@ -39,53 +51,81 @@
   --warning-soft: #fdf3e5;
 
   --ring: #1d4ed8;
-  --shadow-sm: 0 1px 2px rgb(16 24 40 / 0.05);
-  --shadow-md: 0 4px 12px -2px rgb(16 24 40 / 0.08);
+
+  /* -- Elevation ----------------------------------------------------------
+     Light mode leans on shadow, dark mode leans on surface steps + borders;
+     a dark UI with real drop shadows reads as muddy. */
+  --shadow-sm: 0 1px 2px rgb(13 17 23 / 0.05);
+  --shadow-md: 0 6px 20px -6px rgb(13 17 23 / 0.1), 0 2px 6px -2px rgb(13 17 23 / 0.05);
+  --shadow-lg: 0 24px 48px -16px rgb(13 17 23 / 0.14);
+
+  /* -- Decorative ---------------------------------------------------------- */
+  --grid-line: rgb(13 17 23 / 0.045);
+  --dot: rgb(13 17 23 / 0.08);
 }
 
 .dark {
-  --bg: #0b0e14;
-  --bg-subtle: #10141c;
-  --bg-raised: #141922;
-  --border: #232a36;
-  --border-strong: #333c4b;
+  /* Designed rather than inverted: a cool near-black with a blue cast, and
+     surfaces that step *up* in lightness the way real elevation behaves. */
+  --bg: #080a0f;
+  --bg-subtle: #0e1117;
+  --bg-raised: #12161e;
+  --bg-sunken: #05070a;
+  --bg-invert: #f7f8fa;
 
-  --fg: #e7eaf0;
-  --fg-muted: #a2abba;
-  --fg-subtle: #79838f;
+  --border: #1e242f;
+  --border-strong: #2f3846;
+  --border-hair: #161b24;
+
+  --fg: #e8ebf0;
+  --fg-muted: #a3acb9;
+  --fg-subtle: #7d8794;
+  --fg-invert: #0d1117;
 
   --accent: #7aa2f7;
-  --accent-hover: #9cbaf9;
-  --accent-soft: #16203a;
-  --accent-fg: #0b0e14;
+  --accent-hover: #9dbcfa;
+  --accent-soft: #131c30;
+  --accent-line: #24365c;
+  --accent-fg: #080a0f;
 
   --success: #6ee7a8;
-  --success-soft: #10281d;
+  --success-soft: #0d2419;
   --danger: #f88b83;
   --danger-hover: #fba9a3;
-  --danger-soft: #2c1513;
+  --danger-soft: #2a1412;
   --warning: #eebf6d;
-  --warning-soft: #2a1f0e;
+  --warning-soft: #281e0d;
 
   --ring: #7aa2f7;
-  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
-  --shadow-md: 0 4px 14px -2px rgb(0 0 0 / 0.5);
+
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.5);
+  --shadow-md: 0 8px 24px -8px rgb(0 0 0 / 0.6);
+  --shadow-lg: 0 28px 56px -20px rgb(0 0 0 / 0.7);
+
+  --grid-line: rgb(255 255 255 / 0.035);
+  --dot: rgb(255 255 255 / 0.07);
 }
 
 @theme inline {
   --color-bg: var(--bg);
   --color-bg-subtle: var(--bg-subtle);
   --color-bg-raised: var(--bg-raised);
+  --color-bg-sunken: var(--bg-sunken);
+  --color-bg-invert: var(--bg-invert);
+
   --color-border-base: var(--border);
   --color-border-strong: var(--border-strong);
+  --color-border-hair: var(--border-hair);
 
   --color-fg: var(--fg);
   --color-fg-muted: var(--fg-muted);
   --color-fg-subtle: var(--fg-subtle);
+  --color-fg-invert: var(--fg-invert);
 
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-accent-soft: var(--accent-soft);
+  --color-accent-line: var(--accent-line);
   --color-accent-fg: var(--accent-fg);
 
   --color-success: var(--success);
@@ -97,15 +137,40 @@
   --color-warning-soft: var(--warning-soft);
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  --font-mono: var(--font-mono-face), ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  /* Fluid type scale. Each step interpolates between a mobile and a desktop
+     size, so headings stay proportionate without a stack of breakpoints. */
+  --text-display: clamp(2.75rem, 1.6rem + 5.2vw, 5.5rem);
+  --text-display--line-height: 0.94;
+  --text-display--letter-spacing: -0.035em;
+
+  --text-title: clamp(1.75rem, 1.2rem + 2.2vw, 2.75rem);
+  --text-title--line-height: 1.08;
+  --text-title--letter-spacing: -0.025em;
+
+  --text-subtitle: clamp(1.15rem, 0.95rem + 0.9vw, 1.5rem);
+  --text-subtitle--line-height: 1.3;
+  --text-subtitle--letter-spacing: -0.015em;
+
+  --text-lead: clamp(1rem, 0.95rem + 0.3vw, 1.125rem);
+  --text-lead--line-height: 1.62;
+
+  --text-meta: 0.6875rem;
+  --text-meta--line-height: 1.4;
+  --text-meta--letter-spacing: 0.14em;
 
   --shadow-card: var(--shadow-sm);
   --shadow-raised: var(--shadow-md);
+  --shadow-float: var(--shadow-lg);
+
+  --radius-card: 0.875rem;
+  --radius-panel: 1.25rem;
 }
 
-/* -------------------------------------------------------------------------- */
+/* ========================================================================== */
 /* Base                                                                        */
-/* -------------------------------------------------------------------------- */
+/* ========================================================================== */
 
 @layer base {
   * {
@@ -114,9 +179,9 @@
 
   html {
     scroll-behavior: smooth;
-    /* Sticky header height + breathing room, so anchored sections are not
-       hidden under the nav bar. */
-    scroll-padding-top: 5.5rem;
+    /* Floating nav height plus breathing room, so anchored sections are not
+       hidden underneath it. */
+    scroll-padding-top: 6.5rem;
     -webkit-text-size-adjust: 100%;
   }
 
@@ -127,20 +192,20 @@
     font-synthesis-weight: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   /* A single, consistent, always-visible focus indicator. */
   :focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 2px;
-    border-radius: 3px;
+    border-radius: 4px;
   }
 
   h1,
   h2,
   h3,
   h4 {
-    letter-spacing: -0.018em;
     text-wrap: balance;
   }
 
@@ -153,7 +218,6 @@
     color: var(--accent-fg);
   }
 
-  /* Themed scrollbar keeps dark mode from flashing a white gutter. */
   * {
     scrollbar-color: var(--border-strong) transparent;
   }
@@ -171,16 +235,81 @@
   }
 }
 
-/* -------------------------------------------------------------------------- */
-/* Motion                                                                      */
-/* -------------------------------------------------------------------------- */
+/* ========================================================================== */
+/* Utilities                                                                   */
+/* ========================================================================== */
 
-/* Sections fade up as they enter the viewport. Transform + opacity only, so the
-   compositor handles it and no layout work happens during the animation. */
+@layer utilities {
+  /* -- Technical metadata label ------------------------------------------
+     The recurring small-caps monospace label used for section numbers,
+     panel headings and field names. Defined once so it stays identical. */
+  .label {
+    font-family: var(--font-mono);
+    font-size: var(--text-meta);
+    line-height: 1.4;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  /* -- Decorative fields --------------------------------------------------
+     Painted with gradients rather than an image, so they cost no request and
+     scale to any size. Used behind the hero and project fallbacks only. */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  .bg-dots {
+    background-image: radial-gradient(var(--dot) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+
+  /* Fades a decorative layer out towards the edges so it never draws a hard
+     seam across the page. */
+  .mask-fade {
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+  }
+
+  .mask-fade-b {
+    -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 55%, transparent 100%);
+  }
+
+  /* -- Link with an animated underline ------------------------------------ */
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    background-size: 0% 1px;
+    transition: background-size 0.28s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .link-underline:hover,
+  .link-underline:focus-visible {
+    background-size: 100% 1px;
+  }
+
+  /* Skip layout and paint for sections still far below the fold — most of the
+     page on a phone. */
+  .content-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 600px;
+  }
+}
+
+/* ========================================================================== */
+/* Motion                                                                      */
+/* ========================================================================== */
+
+/* Sections fade up as they enter the viewport. Transform + opacity only, so
+   the compositor handles it and no layout work happens mid-animation. */
 @keyframes reveal-up {
   from {
     opacity: 0;
-    transform: translate3d(0, 12px, 0);
+    transform: translate3d(0, 14px, 0);
   }
   to {
     opacity: 1;
@@ -190,9 +319,9 @@
 
 @layer utilities {
   .reveal {
-    animation: reveal-up 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+    animation: reveal-up 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
     animation-timeline: view();
-    animation-range: entry 0% cover 22%;
+    animation-range: entry 0% cover 20%;
   }
 
   /* Browsers without scroll-driven animations get the content immediately
@@ -201,11 +330,6 @@
     .reveal {
       animation: none;
     }
-  }
-
-  .content-auto {
-    content-visibility: auto;
-    contain-intrinsic-size: auto 400px;
   }
 }
 
@@ -228,9 +352,9 @@
   }
 }
 
-/* -------------------------------------------------------------------------- */
+/* ========================================================================== */
 /* Print — the portfolio should print as a clean document                      */
-/* -------------------------------------------------------------------------- */
+/* ========================================================================== */
 
 @media print {
   .no-print {
@@ -240,5 +364,10 @@
   body {
     background: #fff;
     color: #000;
+  }
+
+  .bg-grid,
+  .bg-dots {
+    background-image: none !important;
   }
 }

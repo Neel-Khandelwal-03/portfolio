@@ -1,13 +1,14 @@
 import { Suspense } from "react";
 
 import { Hero } from "@/components/public/hero";
-import { ContactSection, ResumeSection } from "@/components/public/contact-resume";
+import { ContactSection, ResumeStrip } from "@/components/public/contact-resume";
 import {
   AboutSection,
   AchievementsSection,
   CertificationsSection,
   EducationSection,
   ExperienceSection,
+  MarqueeStrip,
   ProjectsSection,
   SkillsSection,
 } from "@/components/public/sections";
@@ -32,23 +33,33 @@ import {
  *
  * Each section below the fold is its own async Server Component behind a
  * `Suspense` boundary. On a cold render — the first request after a content
- * change — the hero and navigation stream immediately and the remaining
- * sections fill in as their queries resolve, instead of the whole page waiting
- * on the slowest one.
+ * change — the hero streams immediately and the rest fills in as its queries
+ * resolve, instead of the whole page waiting on the slowest one.
  */
 
 export default async function HomePage() {
-  const [profile, socialLinks] = await Promise.all([getProfile(), getSocialLinks()]);
+  const [profile, socialLinks, skillGroups] = await Promise.all([
+    getProfile(),
+    getSocialLinks(),
+    getSkillGroups(),
+  ]);
+
+  // The hero's "Focus" list and the transition strip are both derived from
+  // skill data that already exists — no new schema, no hardcoded copy.
+  const focusAreas = skillGroups.map((group) => group.name).slice(0, 5);
+  const strip = skillGroups.flatMap((group) => group.skills.map((s) => s.name)).slice(0, 8);
 
   return (
     <>
-      <Hero profile={profile} socialLinks={socialLinks} />
+      <Hero profile={profile} socialLinks={socialLinks} focusAreas={focusAreas} />
+
+      <MarqueeStrip items={strip} />
 
       <Suspense fallback={<SectionSkeleton rows={2} />}>
         <About />
       </Suspense>
 
-      <Suspense fallback={<SectionSkeleton rows={2} />}>
+      <Suspense fallback={<SectionSkeleton rows={3} />}>
         <Skills />
       </Suspense>
 
@@ -64,15 +75,15 @@ export default async function HomePage() {
         <EducationBlock />
       </Suspense>
 
-      <Suspense fallback={<SectionSkeleton rows={2} />}>
+      <Suspense fallback={null}>
         <Certifications />
       </Suspense>
 
-      <Suspense fallback={<SectionSkeleton rows={2} />}>
+      <Suspense fallback={null}>
         <Achievements />
       </Suspense>
 
-      <Suspense fallback={<SectionSkeleton rows={1} />}>
+      <Suspense fallback={null}>
         <Resume />
       </Suspense>
 
@@ -103,12 +114,21 @@ async function Experience() {
   return <ExperienceSection experiences={await getExperiences()} />;
 }
 
+/**
+ * Featured projects get the large alternating treatment; everything else falls
+ * into the compact list beneath. Capped at three large blocks so the section
+ * stays a showcase rather than an endless scroll.
+ */
 async function Projects() {
   const [featured, all] = await Promise.all([getFeaturedProjects(), getPublishedProjects()]);
-  // Fall back to the most recent projects so the section is never empty just
-  // because nothing has been marked featured yet.
-  const shown = featured.length > 0 ? featured : all.slice(0, 4);
-  return <ProjectsSection featured={shown} totalCount={all.length} />;
+
+  // With nothing marked featured, promote the first two so the section still
+  // leads with something visual.
+  const lead = (featured.length > 0 ? featured : all.slice(0, 2)).slice(0, 3);
+  const leadIds = new Set(lead.map((p) => p.id));
+  const rest = all.filter((p) => !leadIds.has(p.id)).slice(0, 6);
+
+  return <ProjectsSection featured={lead} rest={rest} totalCount={all.length} />;
 }
 
 async function EducationBlock() {
@@ -124,7 +144,7 @@ async function Achievements() {
 }
 
 async function Resume() {
-  return <ResumeSection profile={await getProfile()} />;
+  return <ResumeStrip profile={await getProfile()} />;
 }
 
 async function Contact() {
@@ -142,8 +162,7 @@ async function Contact() {
 
 /**
  * schema.org Person markup, built from the database so it stays in step with
- * the visible content. Rendered last because search engines read the parsed
- * document, not the streaming order.
+ * the visible content.
  */
 async function StructuredData() {
   const [profile, socialLinks, skillGroups, education] = await Promise.all([
@@ -176,7 +195,6 @@ async function StructuredData() {
   return (
     <script
       type="application/ld+json"
-      // JSON.stringify output is escaped below; `<` cannot terminate the tag.
       dangerouslySetInnerHTML={{
         __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
       }}

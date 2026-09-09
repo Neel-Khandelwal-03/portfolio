@@ -11,12 +11,12 @@ export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 export type ButtonSize = "sm" | "md" | "lg";
 
 const BUTTON_BASE =
-  "inline-flex items-center justify-center gap-2 rounded-lg font-medium whitespace-nowrap " +
-  "transition-[background-color,border-color,color,opacity] duration-150 " +
-  "disabled:pointer-events-none disabled:opacity-55";
+  "group/btn relative inline-flex items-center justify-center gap-2 rounded-lg font-medium whitespace-nowrap " +
+  "transition-[background-color,border-color,color,box-shadow,transform] duration-200 " +
+  "active:translate-y-px disabled:pointer-events-none disabled:opacity-55";
 
 const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
-  primary: "bg-accent text-accent-fg hover:bg-accent-hover",
+  primary: "bg-accent text-accent-fg hover:bg-accent-hover shadow-card hover:shadow-raised",
   secondary:
     "border border-border-base bg-bg-raised text-fg hover:border-border-strong hover:bg-bg-subtle",
   ghost: "text-fg-muted hover:bg-bg-subtle hover:text-fg",
@@ -26,7 +26,7 @@ const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
 const BUTTON_SIZES: Record<ButtonSize, string> = {
   sm: "h-8 px-3 text-[13px]",
   md: "h-10 px-4 text-sm",
-  lg: "h-11 px-5 text-[15px]",
+  lg: "h-12 px-6 text-[15px]",
 };
 
 export function buttonClasses(
@@ -63,7 +63,7 @@ export function ButtonLink({
 export function Card({ className, ...props }: ComponentPropsWithoutRef<"div">) {
   return (
     <div
-      className={cn("border-border-base bg-bg-raised shadow-card rounded-xl border", className)}
+      className={cn("border-border-base bg-bg-raised rounded-card border", className)}
       {...props}
     />
   );
@@ -96,7 +96,7 @@ export function Badge({
 /** Small monospace chip used for technology lists. */
 export function TechChip({ children }: { children: ReactNode }) {
   return (
-    <span className="border-border-base bg-bg-subtle text-fg-muted rounded-md border px-2 py-1 font-mono text-[11px] leading-none">
+    <span className="border-border-base bg-bg-subtle text-fg-muted hover:border-border-strong hover:text-fg rounded-md border px-2 py-1 font-mono text-[11px] leading-none transition-colors duration-200">
       {children}
     </span>
   );
@@ -107,59 +107,95 @@ export function TechChip({ children }: { children: ReactNode }) {
 /* -------------------------------------------------------------------------- */
 
 export function Container({ className, ...props }: ComponentPropsWithoutRef<"div">) {
-  return <div className={cn("mx-auto w-full max-w-5xl px-5 sm:px-6", className)} {...props} />;
+  return <div className={cn("mx-auto w-full max-w-6xl px-5 sm:px-8", className)} {...props} />;
+}
+
+/**
+ * The recurring monospace label: a two-digit index, a slash, and a name.
+ *
+ * Used for section headers and panel headings so numbering reads as a
+ * deliberate system rather than decoration.
+ */
+export function Eyebrow({
+  index,
+  children,
+  className,
+}: {
+  index?: string;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <p className={cn("label text-accent flex items-center gap-2", className)}>
+      {index ? (
+        <>
+          <span className="tabular-nums">{index}</span>
+          <span className="bg-accent-line h-px w-6" aria-hidden />
+        </>
+      ) : null}
+      <span className="text-fg-subtle">{children}</span>
+    </p>
+  );
 }
 
 /**
  * A portfolio section.
  *
- * `content-auto` lets the browser skip layout and paint for sections still far
- * below the fold, which is most of the page on a phone.
+ * The header is a two-column band on desktop — number and title on the left,
+ * supporting copy on the right — which gives every section the same anchor
+ * point while leaving the body free to use whatever layout suits its content.
  */
 export function Section({
   id,
+  index,
   eyebrow,
   title,
   description,
   children,
   className,
+  bleed = false,
   as: Tag = "section",
 }: {
   id: string;
-  eyebrow?: string;
+  index?: string;
+  eyebrow: string;
   title: string;
   description?: string;
   children: ReactNode;
   className?: string;
+  /** Skips the container so the body can run full width. */
+  bleed?: boolean;
   as?: ElementType;
 }) {
+  const header = (
+    <div className="reveal grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-end lg:gap-12">
+      <div>
+        <Eyebrow index={index}>{eyebrow}</Eyebrow>
+        <h2 id={`${id}-heading`} className="text-title mt-4 font-semibold">
+          {title}
+        </h2>
+      </div>
+      {description ? (
+        <p className="text-fg-muted text-lead max-w-xl lg:pb-1.5">{description}</p>
+      ) : null}
+    </div>
+  );
+
   return (
     <Tag
       id={id}
       aria-labelledby={`${id}-heading`}
-      className={cn(
-        "content-auto border-border-base scroll-mt-24 border-t py-16 sm:py-20",
-        className,
-      )}
+      className={cn("content-auto scroll-mt-28 py-20 sm:py-28", className)}
     >
       <Container>
-        <div className="reveal">
-          {eyebrow ? (
-            <p className="text-accent mb-3 font-mono text-[11px] font-medium tracking-[0.16em] uppercase">
-              {eyebrow}
-            </p>
-          ) : null}
-          <h2 id={`${id}-heading`} className="text-2xl font-semibold sm:text-3xl">
-            {title}
-          </h2>
-          {description ? (
-            <p className="text-fg-muted mt-3 max-w-2xl text-[15px] leading-relaxed">
-              {description}
-            </p>
-          ) : null}
-        </div>
-        <div className="mt-10">{children}</div>
+        {header}
+        <div className="border-border-hair mt-8 border-t" aria-hidden />
       </Container>
+      {bleed ? (
+        <div className="mt-12">{children}</div>
+      ) : (
+        <Container className="mt-12">{children}</Container>
+      )}
     </Tag>
   );
 }
@@ -178,7 +214,7 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="border-border-strong bg-bg-subtle rounded-xl border border-dashed px-6 py-12 text-center">
+    <div className="border-border-strong bg-bg-subtle rounded-card border border-dashed px-6 py-12 text-center">
       <p className="text-fg text-sm font-medium">{title}</p>
       {description ? (
         <p className="text-fg-muted mx-auto mt-1.5 max-w-md text-sm">{description}</p>
@@ -197,13 +233,13 @@ export function Skeleton({ className }: { className?: string }) {
 
 export function SectionSkeleton({ rows = 3 }: { rows?: number }) {
   return (
-    <div className="border-border-base border-t py-16 sm:py-20">
+    <div className="py-20 sm:py-28">
       <Container>
         <Skeleton className="h-3 w-24" />
-        <Skeleton className="mt-4 h-8 w-56" />
-        <div className="mt-10 space-y-4">
+        <Skeleton className="mt-4 h-9 w-64" />
+        <div className="mt-12 space-y-4">
           {Array.from({ length: rows }).map((_, index) => (
-            <Skeleton key={index} className="h-24 w-full" />
+            <Skeleton key={index} className="h-28 w-full" />
           ))}
         </div>
       </Container>
@@ -229,7 +265,7 @@ export function Prose({ text, className }: { text: string; className?: string })
   if (paragraphs.length === 0) return null;
 
   return (
-    <div className={cn("text-fg-muted space-y-4 text-[15px] leading-relaxed", className)}>
+    <div className={cn("text-fg-muted text-lead space-y-5", className)}>
       {paragraphs.map((paragraph, index) => (
         <p key={index}>{paragraph}</p>
       ))}
