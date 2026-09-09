@@ -4,32 +4,44 @@ import { z } from "zod";
 /* Reusable primitives                                                         */
 /* -------------------------------------------------------------------------- */
 
-/** Trims, then treats "" as absent so empty form fields become null. */
+/**
+ * Trims, then treats "" as absent so empty form fields become null.
+ *
+ * `.nullish()` also covers a key that is missing entirely, which happens for
+ * API clients that simply omit an optional field.
+ */
 const optionalText = (max: number) =>
   z
     .string()
     .trim()
     .max(max)
-    .transform((v) => (v === "" ? null : v))
-    .nullable();
+    .nullish()
+    .transform((v) => (v == null || v === "" ? null : v));
 
 const optionalUrl = z
   .string()
   .trim()
   .max(2048)
-  .transform((v) => (v === "" ? null : v))
-  .nullable()
+  .nullish()
+  .transform((v) => {
+    if (v == null || v === "") return null;
+    // People type "github.com/me/repo". Rejecting that is pedantic when the
+    // intent is unambiguous, so add the scheme rather than fail the whole save.
+    if (/^(https?:\/\/|mailto:|\/)/i.test(v)) return v;
+    if (/^[\w-]+(\.[\w-]+)+(\/|$)/.test(v)) return `https://${v}`;
+    return v;
+  })
   .refine(
     (v) => v === null || /^https?:\/\/.+/i.test(v) || v.startsWith("/") || /^mailto:/i.test(v),
     { message: "Must be an http(s) URL, a mailto: link, or a site-relative path" },
   );
 
-/** `YYYY-MM-DD`, or null when the field is left blank. */
+/** `YYYY-MM-DD`, or null when the field is blank or absent. */
 const optionalDate = z
   .string()
   .trim()
-  .transform((v) => (v === "" ? null : v))
-  .nullable()
+  .nullish()
+  .transform((v) => (v == null || v === "" ? null : v))
   .refine((v) => v === null || /^\d{4}-\d{2}-\d{2}$/.test(v), {
     message: "Use the date picker (YYYY-MM-DD)",
   });
@@ -45,7 +57,9 @@ const requiredDate = z
  */
 const stringList = z
   .union([z.string(), z.array(z.string())])
+  .nullish()
   .transform((value) => {
+    if (value == null) return [];
     const parts = Array.isArray(value) ? value : value.split(/[\n,]/);
     return parts.map((p) => p.trim()).filter(Boolean);
   })
@@ -54,7 +68,9 @@ const stringList = z
 /** Newline-separated only — commas are legitimate inside a bullet point. */
 const bulletList = z
   .union([z.string(), z.array(z.string())])
+  .nullish()
   .transform((value) => {
+    if (value == null) return [];
     const parts = Array.isArray(value) ? value : value.split(/\n/);
     return parts.map((p) => p.trim().replace(/^[-•*]\s*/, "")).filter(Boolean);
   })
@@ -62,8 +78,18 @@ const bulletList = z
 
 const displayOrder = z.coerce.number().int().min(0).max(9999).default(0);
 
+/**
+ * A checkbox.
+ *
+ * An unticked checkbox is not submitted at all, so the key is simply absent
+ * from the form data — `.optional()` is what makes that valid. Listing
+ * `z.undefined()` inside the union is not enough: Zod still treats the property
+ * as required and rejects a missing key, which made every toggle in the admin
+ * impossible to turn off.
+ */
 const checkbox = z
-  .union([z.boolean(), z.string(), z.undefined(), z.null()])
+  .union([z.boolean(), z.string(), z.null()])
+  .optional()
   .transform((v) => v === true || v === "on" || v === "true");
 
 export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -168,10 +194,12 @@ export const skillCategorySchema = z
 export const skillSchema = z.object({
   categoryId: z.coerce.number().int().positive("Choose a category"),
   name: z.string().trim().min(1, "Skill name is required").max(120),
+  // The inline skill editor has no proficiency input at all, so the key is
+  // absent there — it must be treated the same as an empty one.
   proficiency: z
     .union([z.literal(""), z.coerce.number().int().min(1).max(5)])
-    .transform((v) => (v === "" ? null : v))
-    .nullable(),
+    .nullish()
+    .transform((v) => (v == null || v === "" ? null : v)),
   isVisible: checkbox,
   displayOrder,
 });

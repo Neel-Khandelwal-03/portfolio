@@ -9,6 +9,7 @@ import {
   failure,
   fieldErrorsFrom,
   formDataToObject,
+  submittedValues,
   success,
   type ActionState,
 } from "@/lib/action-state";
@@ -81,7 +82,13 @@ function parse<S extends z.ZodType>(
   if (!result.success) {
     return {
       ok: false,
-      state: failure("Please correct the highlighted fields.", fieldErrorsFrom(result.error)),
+      // Echo the submission back so the form can repopulate itself; React
+      // clears an uncontrolled form as soon as the action resolves.
+      state: failure(
+        "Please correct the highlighted fields.",
+        fieldErrorsFrom(result.error),
+        submittedValues(formData),
+      ),
     };
   }
 

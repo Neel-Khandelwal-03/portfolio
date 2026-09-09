@@ -35,6 +35,11 @@ export function ProjectForm({ project }: { project?: Project }) {
   const [state, formAction] = useActionState<ActionState, FormData>(action, IDLE);
   useActionToast(state);
 
+  // After a rejected save React clears the uncontrolled inputs, so fall back to
+  // the values the action echoed back rather than to the stored record.
+  const prior = state.values;
+  const keep = (field: string, stored: string | null | undefined) => prior?.[field] ?? stored ?? "";
+
   const [title, setTitle] = useState(project?.title ?? "");
   const [slug, setSlug] = useState(project?.slug ?? "");
   // Once a project is live its slug is a public URL, so only auto-fill the slug
@@ -82,7 +87,7 @@ export function ProjectForm({ project }: { project?: Project }) {
             label="Short description"
             rows={2}
             hint="One or two sentences. Shown on project cards and used for SEO."
-            defaultValue={project?.summary ?? ""}
+            defaultValue={keep("summary", project?.summary)}
             error={errors.summary}
           />
 
@@ -91,7 +96,7 @@ export function ProjectForm({ project }: { project?: Project }) {
             label="Full description"
             rows={10}
             hint="The project detail page. Blank lines separate paragraphs."
-            defaultValue={project?.description ?? ""}
+            defaultValue={keep("description", project?.description)}
             error={errors.description}
           />
         </FormSection>
@@ -107,7 +112,7 @@ export function ProjectForm({ project }: { project?: Project }) {
                 name="category"
                 list="project-categories"
                 required
-                defaultValue={project?.category ?? "Full-Stack"}
+                defaultValue={prior?.category ?? project?.category ?? "Full-Stack"}
                 aria-invalid={Boolean(errors.category)}
                 className="border-border-base bg-bg focus:border-accent aria-[invalid=true]:border-danger w-full rounded-lg border px-3 py-2 text-sm focus:outline-none"
               />
@@ -131,7 +136,7 @@ export function ProjectForm({ project }: { project?: Project }) {
               type="number"
               min={0}
               hint="Lower numbers appear first. Reorder buttons on the list page also set this."
-              defaultValue={project?.displayOrder ?? 0}
+              defaultValue={prior?.displayOrder ?? project?.displayOrder ?? 0}
               error={errors.displayOrder}
             />
           </div>
@@ -141,7 +146,7 @@ export function ProjectForm({ project }: { project?: Project }) {
             label="Technologies"
             rows={3}
             hint="One per line, or comma separated."
-            defaultValue={project?.technologies.join("\n") ?? ""}
+            defaultValue={prior?.technologies ?? project?.technologies.join("\n") ?? ""}
             error={errors.technologies}
           />
 
@@ -150,7 +155,7 @@ export function ProjectForm({ project }: { project?: Project }) {
               name="startDate"
               label="Start date"
               type="date"
-              defaultValue={project?.startDate ?? ""}
+              defaultValue={keep("startDate", project?.startDate)}
               error={errors.startDate}
             />
             <TextField
@@ -158,7 +163,7 @@ export function ProjectForm({ project }: { project?: Project }) {
               label="End date"
               type="date"
               hint="Leave empty if it is ongoing."
-              defaultValue={project?.endDate ?? ""}
+              defaultValue={keep("endDate", project?.endDate)}
               error={errors.endDate}
             />
           </div>
@@ -170,7 +175,7 @@ export function ProjectForm({ project }: { project?: Project }) {
             label="GitHub URL"
             type="url"
             placeholder="https://github.com/you/project"
-            defaultValue={project?.githubUrl ?? ""}
+            defaultValue={keep("githubUrl", project?.githubUrl)}
             error={errors.githubUrl}
           />
           <TextField
@@ -178,7 +183,7 @@ export function ProjectForm({ project }: { project?: Project }) {
             label="Live demo URL"
             type="url"
             placeholder="https://example.com"
-            defaultValue={project?.liveUrl ?? ""}
+            defaultValue={keep("liveUrl", project?.liveUrl)}
             error={errors.liveUrl}
           />
         </FormSection>
@@ -189,7 +194,7 @@ export function ProjectForm({ project }: { project?: Project }) {
             label="Cover image"
             folder="projects"
             accept="image"
-            defaultValue={project?.coverImageUrl}
+            defaultValue={prior?.coverImageUrl ?? project?.coverImageUrl}
             hint="16:9 works best. PNG, JPEG, WebP or AVIF, up to 5 MB."
             error={errors.coverImageUrl}
           />
@@ -201,13 +206,15 @@ export function ProjectForm({ project }: { project?: Project }) {
             name="isPublished"
             label="Published"
             hint="Unpublished projects are hidden from the public site entirely."
-            defaultChecked={project?.isPublished ?? true}
+            error={errors.isPublished}
+            defaultChecked={prior ? prior.isPublished === "on" : (project?.isPublished ?? true)}
           />
           <CheckboxField
             name="isFeatured"
             label="Featured"
             hint="Featured projects appear in the Projects section of the homepage."
-            defaultChecked={project?.isFeatured ?? false}
+            error={errors.isFeatured}
+            defaultChecked={prior ? prior.isFeatured === "on" : (project?.isFeatured ?? false)}
           />
         </FormSection>
       </FormCard>

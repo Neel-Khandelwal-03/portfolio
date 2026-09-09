@@ -35,6 +35,10 @@ export function ExperienceForm({ experience }: { experience?: Experience }) {
   useActionToast(state);
 
   const errors = state.fieldErrors ?? {};
+  // React clears an uncontrolled form once the action resolves, so a rejected
+  // save falls back to the echoed submission rather than the stored record.
+  const prior = state.values;
+  const keep = (field: string, stored: string | null | undefined) => prior?.[field] ?? stored ?? "";
 
   return (
     <form action={formAction} className="max-w-3xl space-y-6">
@@ -49,14 +53,14 @@ export function ExperienceForm({ experience }: { experience?: Experience }) {
               name="company"
               label="Company"
               required
-              defaultValue={experience?.company ?? ""}
+              defaultValue={keep("company", experience?.company)}
               error={errors.company}
             />
             <TextField
               name="role"
               label="Role"
               required
-              defaultValue={experience?.role ?? ""}
+              defaultValue={keep("role", experience?.role)}
               error={errors.role}
             />
           </div>
@@ -66,14 +70,14 @@ export function ExperienceForm({ experience }: { experience?: Experience }) {
               name="employmentType"
               label="Employment type"
               options={EMPLOYMENT_TYPES}
-              defaultValue={experience?.employmentType ?? "Internship"}
+              defaultValue={prior?.employmentType ?? experience?.employmentType ?? "Internship"}
               error={errors.employmentType}
             />
             <TextField
               name="location"
               label="Location"
               placeholder="Remote / Bengaluru, India"
-              defaultValue={experience?.location ?? ""}
+              defaultValue={keep("location", experience?.location)}
               error={errors.location}
             />
           </div>
@@ -84,7 +88,7 @@ export function ExperienceForm({ experience }: { experience?: Experience }) {
               label="Start date"
               type="date"
               required
-              defaultValue={experience?.startDate ?? ""}
+              defaultValue={keep("startDate", experience?.startDate)}
               error={errors.startDate}
             />
             <TextField
@@ -92,7 +96,7 @@ export function ExperienceForm({ experience }: { experience?: Experience }) {
               label="End date"
               type="date"
               hint="Leave empty for a current role — the timeline shows “Present”."
-              defaultValue={experience?.endDate ?? ""}
+              defaultValue={keep("endDate", experience?.endDate)}
               error={errors.endDate}
             />
           </div>
@@ -104,7 +108,7 @@ export function ExperienceForm({ experience }: { experience?: Experience }) {
             label="Description"
             rows={4}
             hint="A short paragraph about the role and the team."
-            defaultValue={experience?.description ?? ""}
+            defaultValue={keep("description", experience?.description)}
             error={errors.description}
           />
           <TextArea
@@ -112,7 +116,7 @@ export function ExperienceForm({ experience }: { experience?: Experience }) {
             label="Responsibilities"
             rows={5}
             hint="One bullet per line."
-            defaultValue={experience?.responsibilities.join("\n") ?? ""}
+            defaultValue={prior?.responsibilities ?? experience?.responsibilities.join("\n") ?? ""}
             error={errors.responsibilities}
           />
           <TextArea
@@ -120,7 +124,7 @@ export function ExperienceForm({ experience }: { experience?: Experience }) {
             label="Achievements"
             rows={4}
             hint="One per line. Quantify where you can."
-            defaultValue={experience?.achievements.join("\n") ?? ""}
+            defaultValue={prior?.achievements ?? experience?.achievements.join("\n") ?? ""}
             error={errors.achievements}
           />
           <TextArea
@@ -128,7 +132,7 @@ export function ExperienceForm({ experience }: { experience?: Experience }) {
             label="Technologies"
             rows={3}
             hint="One per line, or comma separated."
-            defaultValue={experience?.technologies.join("\n") ?? ""}
+            defaultValue={prior?.technologies ?? experience?.technologies.join("\n") ?? ""}
             error={errors.technologies}
           />
         </FormSection>
@@ -139,7 +143,7 @@ export function ExperienceForm({ experience }: { experience?: Experience }) {
             label="Company logo"
             folder="logos"
             accept="image"
-            defaultValue={experience?.logoUrl}
+            defaultValue={prior?.logoUrl ?? experience?.logoUrl}
             hint="Small square or wordmark. Shown next to the company name."
             error={errors.logoUrl}
           />
@@ -149,7 +153,7 @@ export function ExperienceForm({ experience }: { experience?: Experience }) {
             folder="certificates"
             accept="document"
             preview={false}
-            defaultValue={experience?.certificateUrl}
+            defaultValue={prior?.certificateUrl ?? experience?.certificateUrl}
             hint="PDF. A “View certificate” link appears on the timeline."
             error={errors.certificateUrl}
           />
@@ -161,13 +165,14 @@ export function ExperienceForm({ experience }: { experience?: Experience }) {
             label="Display order"
             type="number"
             min={0}
-            defaultValue={experience?.displayOrder ?? 0}
+            defaultValue={prior?.displayOrder ?? experience?.displayOrder ?? 0}
             error={errors.displayOrder}
           />
           <CheckboxField
             name="isPublished"
             label="Published"
-            defaultChecked={experience?.isPublished ?? true}
+            error={errors.isPublished}
+            defaultChecked={prior ? prior.isPublished === "on" : (experience?.isPublished ?? true)}
           />
         </FormSection>
       </FormCard>

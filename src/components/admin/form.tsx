@@ -175,11 +175,14 @@ export function CheckboxField({
   name,
   label,
   hint,
+  error,
   defaultChecked,
 }: {
   name: string;
   label: string;
   hint?: string;
+  /** Rendered like every other field — a toggle must never fail invisibly. */
+  error?: string;
   defaultChecked?: boolean;
 }) {
   return (
@@ -189,13 +192,21 @@ export function CheckboxField({
         name={name}
         type="checkbox"
         defaultChecked={defaultChecked}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? `${name}-error` : undefined}
         className="border-border-strong mt-0.5 h-4 w-4 shrink-0 rounded accent-[var(--accent)]"
       />
       <div>
         <label htmlFor={name} className="text-[13px] font-medium">
           {label}
         </label>
-        {hint ? <p className="text-fg-subtle mt-0.5 text-[13px]">{hint}</p> : null}
+        {error ? (
+          <p id={`${name}-error`} className="text-danger mt-0.5 text-[13px]">
+            {error}
+          </p>
+        ) : hint ? (
+          <p className="text-fg-subtle mt-0.5 text-[13px]">{hint}</p>
+        ) : null}
       </div>
     </div>
   );
