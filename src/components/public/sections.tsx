@@ -35,7 +35,7 @@ import type { SkillGroup } from "@/services/portfolio";
  * left, with the three interest cards stacked beside it as a narrow sidebar —
  * the shape of a magazine spread rather than another equal-weight card grid.
  */
-export function AboutSection({ profile }: { profile: Profile }) {
+export function AboutSection({ profile, index }: { profile: Profile; index: string }) {
   const cards = [
     { title: "Career interests", body: profile.careerInterests, Icon: BriefcaseIcon },
     { title: "Technical interests", body: profile.technicalInterests, Icon: CodeIcon },
@@ -45,7 +45,7 @@ export function AboutSection({ profile }: { profile: Profile }) {
   return (
     <Section
       id="about"
-      index="01"
+      index={index}
       eyebrow="About"
       title="Engineering across the whole stack"
       description="From the relational schema through the API to the interface someone actually uses."
@@ -86,14 +86,14 @@ export function AboutSection({ profile }: { profile: Profile }) {
  * name in the left column and its technologies flowing across the right. Dense,
  * scannable, and it makes the list read as a technical reference.
  */
-export function SkillsSection({ groups }: { groups: SkillGroup[] }) {
+export function SkillsSection({ groups, index }: { groups: SkillGroup[]; index: string }) {
   const populated = groups.filter((group) => group.skills.length > 0);
   const total = populated.reduce((sum, group) => sum + group.skills.length, 0);
 
   return (
     <Section
       id="skills"
-      index="02"
+      index={index}
       eyebrow="Skills"
       title="Tools I reach for"
       description={`${total} technologies across ${populated.length} areas — the ones I actually use, not everything I have touched.`}
@@ -178,11 +178,17 @@ function BulletGroup({
   );
 }
 
-export function ExperienceSection({ experiences }: { experiences: Experience[] }) {
+export function ExperienceSection({
+  experiences,
+  index,
+}: {
+  experiences: Experience[];
+  index: string;
+}) {
   return (
     <Section
       id="experience"
-      index="03"
+      index={index}
       eyebrow="Experience"
       title="Where I have worked"
       description="Internships across consulting, applied AI and automation."
@@ -569,15 +575,17 @@ export function ProjectsSection({
   featured,
   rest,
   totalCount,
+  index,
 }: {
   featured: Project[];
   rest: Project[];
   totalCount: number;
+  index: string;
 }) {
   return (
     <Section
       id="projects"
-      index="04"
+      index={index}
       eyebrow="Projects"
       title="Things I have built"
       description="Full-stack products, applied AI, and systems work. Each one has a write-up."
@@ -638,9 +646,15 @@ export function ProjectsSection({
  * leave more border than content, so the dates sit in a mono gutter and the
  * detail flows beside them.
  */
-export function EducationSection({ education }: { education: Education[] }) {
+export function EducationSection({
+  education,
+  index,
+}: {
+  education: Education[];
+  index: string;
+}) {
   return (
-    <Section id="education" index="05" eyebrow="Education" title="Academic background">
+    <Section id="education" index={index} eyebrow="Education" title="Academic background">
       {education.length === 0 ? (
         <EmptyState
           title="No education added yet"
@@ -704,11 +718,17 @@ export function EducationSection({ education }: { education: Education[] }) {
  * A credential index. Rows rather than cards, because a certification is
  * essentially three short facts and a link — a card would be mostly padding.
  */
-export function CertificationsSection({ certifications }: { certifications: Certification[] }) {
+export function CertificationsSection({
+  certifications,
+  index,
+}: {
+  certifications: Certification[];
+  index: string;
+}) {
   if (certifications.length === 0) return null;
 
   return (
-    <Section id="certifications" index="06" eyebrow="Certifications" title="Verified credentials">
+    <Section id="certifications" index={index} eyebrow="Certifications" title="Verified credentials">
       <ul className="reveal border-border-hair divide-border-hair divide-y border-y">
         {certifications.map((item) => {
           const credential = safeUrl(item.credentialUrl);
@@ -766,11 +786,17 @@ export function CertificationsSection({ certifications }: { certifications: Cert
 /* Achievements                                                                */
 /* ========================================================================== */
 
-export function AchievementsSection({ achievements }: { achievements: Achievement[] }) {
+export function AchievementsSection({
+  achievements,
+  index,
+}: {
+  achievements: Achievement[];
+  index: string;
+}) {
   if (achievements.length === 0) return null;
 
   return (
-    <Section id="achievements" index="07" eyebrow="Achievements" title="Recognition">
+    <Section id="achievements" index={index} eyebrow="Achievements" title="Recognition">
       <ul className="reveal grid gap-4 sm:grid-cols-2">
         {achievements.map((item) => {
           const url = safeUrl(item.url);

@@ -28,10 +28,12 @@ export function ContactSection({
   profile,
   socialLinks,
   settings,
+  index,
 }: {
   profile: Profile;
   socialLinks: SocialLink[];
   settings: SiteSettings;
+  index: string;
 }) {
   const email = profile.email;
   const resumeUrl = safeUrl(profile.resumeUrl);
@@ -53,7 +55,7 @@ export function ContactSection({
           <div className="relative grid gap-12 p-8 sm:p-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-16 lg:p-16">
             {/* ------------------------------------------------------- pitch */}
             <div>
-              <Eyebrow index="08" className="[&>span:last-child]:text-current/60">
+              <Eyebrow index={index} className="[&>span:last-child]:text-current/60">
                 Contact
               </Eyebrow>
 

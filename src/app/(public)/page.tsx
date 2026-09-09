@@ -14,6 +14,7 @@ import {
 } from "@/components/public/sections";
 import { SectionSkeleton } from "@/components/ui";
 import { siteUrl } from "@/lib/env";
+import { getSectionIndex } from "@/lib/sections";
 import {
   getAchievements,
   getCertifications,
@@ -38,11 +39,15 @@ import {
  */
 
 export default async function HomePage() {
-  const [profile, socialLinks, skillGroups] = await Promise.all([
+  const [profile, socialLinks, skillGroups, sections] = await Promise.all([
     getProfile(),
     getSocialLinks(),
     getSkillGroups(),
+    // Section numbers come from what actually renders, so an empty section
+    // never leaves a gap in the sequence.
+    getSectionIndex(),
   ]);
+  const n = sections.numberOf;
 
   // The hero's "Focus" list and the transition strip are both derived from
   // skill data that already exists — no new schema, no hardcoded copy.
@@ -56,31 +61,31 @@ export default async function HomePage() {
       <MarqueeStrip items={strip} />
 
       <Suspense fallback={<SectionSkeleton rows={2} />}>
-        <About />
+        <About index={n("about")} />
       </Suspense>
 
       <Suspense fallback={<SectionSkeleton rows={3} />}>
-        <Skills />
+        <Skills index={n("skills")} />
       </Suspense>
 
       <Suspense fallback={<SectionSkeleton rows={3} />}>
-        <Experience />
+        <Experience index={n("experience")} />
       </Suspense>
 
       <Suspense fallback={<SectionSkeleton rows={2} />}>
-        <Projects />
+        <Projects index={n("projects")} />
       </Suspense>
 
       <Suspense fallback={<SectionSkeleton rows={2} />}>
-        <EducationBlock />
+        <EducationBlock index={n("education")} />
       </Suspense>
 
       <Suspense fallback={null}>
-        <Certifications />
+        <Certifications index={n("certifications")} />
       </Suspense>
 
       <Suspense fallback={null}>
-        <Achievements />
+        <Achievements index={n("achievements")} />
       </Suspense>
 
       <Suspense fallback={null}>
@@ -88,7 +93,7 @@ export default async function HomePage() {
       </Suspense>
 
       <Suspense fallback={<SectionSkeleton rows={3} />}>
-        <Contact />
+        <Contact index={n("contact")} />
       </Suspense>
 
       <Suspense fallback={null}>
@@ -102,16 +107,16 @@ export default async function HomePage() {
 /* Streamed sections                                                           */
 /* -------------------------------------------------------------------------- */
 
-async function About() {
-  return <AboutSection profile={await getProfile()} />;
+async function About({ index }: { index: string }) {
+  return <AboutSection profile={await getProfile()} index={index} />;
 }
 
-async function Skills() {
-  return <SkillsSection groups={await getSkillGroups()} />;
+async function Skills({ index }: { index: string }) {
+  return <SkillsSection groups={await getSkillGroups()} index={index} />;
 }
 
-async function Experience() {
-  return <ExperienceSection experiences={await getExperiences()} />;
+async function Experience({ index }: { index: string }) {
+  return <ExperienceSection experiences={await getExperiences()} index={index} />;
 }
 
 /**
@@ -119,7 +124,7 @@ async function Experience() {
  * into the compact list beneath. Capped at three large blocks so the section
  * stays a showcase rather than an endless scroll.
  */
-async function Projects() {
+async function Projects({ index }: { index: string }) {
   const [featured, all] = await Promise.all([getFeaturedProjects(), getPublishedProjects()]);
 
   // With nothing marked featured, promote the first two so the section still
@@ -128,32 +133,39 @@ async function Projects() {
   const leadIds = new Set(lead.map((p) => p.id));
   const rest = all.filter((p) => !leadIds.has(p.id)).slice(0, 6);
 
-  return <ProjectsSection featured={lead} rest={rest} totalCount={all.length} />;
+  return <ProjectsSection featured={lead} rest={rest} totalCount={all.length} index={index} />;
 }
 
-async function EducationBlock() {
-  return <EducationSection education={await getEducation()} />;
+async function EducationBlock({ index }: { index: string }) {
+  return <EducationSection education={await getEducation()} index={index} />;
 }
 
-async function Certifications() {
-  return <CertificationsSection certifications={await getCertifications()} />;
+async function Certifications({ index }: { index: string }) {
+  return <CertificationsSection certifications={await getCertifications()} index={index} />;
 }
 
-async function Achievements() {
-  return <AchievementsSection achievements={await getAchievements()} />;
+async function Achievements({ index }: { index: string }) {
+  return <AchievementsSection achievements={await getAchievements()} index={index} />;
 }
 
 async function Resume() {
   return <ResumeStrip profile={await getProfile()} />;
 }
 
-async function Contact() {
+async function Contact({ index }: { index: string }) {
   const [profile, socialLinks, settings] = await Promise.all([
     getProfile(),
     getSocialLinks(),
     getSiteSettings(),
   ]);
-  return <ContactSection profile={profile} socialLinks={socialLinks} settings={settings} />;
+  return (
+    <ContactSection
+      profile={profile}
+      socialLinks={socialLinks}
+      settings={settings}
+      index={index}
+    />
+  );
 }
 
 /* -------------------------------------------------------------------------- */

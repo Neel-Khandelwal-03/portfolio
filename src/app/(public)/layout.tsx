@@ -2,43 +2,42 @@ import type { ReactNode } from "react";
 
 import { SiteNav, type NavItem } from "@/components/public/site-nav";
 import { SiteFooter } from "@/components/public/contact-resume";
+import { getSectionIndex, type SectionId } from "@/lib/sections";
 import { safeUrl } from "@/lib/utils";
-import {
-  getCertifications,
-  getProfile,
-  getSiteSettings,
-  getSocialLinks,
-} from "@/services/portfolio";
+import { getProfile, getSiteSettings, getSocialLinks } from "@/services/portfolio";
 
-const BASE_NAV: NavItem[] = [
-  { id: "about", label: "About" },
-  { id: "skills", label: "Skills" },
-  { id: "experience", label: "Experience" },
-  { id: "projects", label: "Projects" },
-  { id: "education", label: "Education" },
-  { id: "contact", label: "Contact" },
-];
+/**
+ * Labels for the sections that earn a nav slot.
+ *
+ * Achievements is deliberately absent: it is a short section and the pill nav
+ * stays readable at six or seven items. Anything listed here is filtered
+ * against the sections that actually render, so a link can never point at an
+ * anchor that is not on the page.
+ */
+const NAV_LABELS: Partial<Record<SectionId, string>> = {
+  about: "About",
+  skills: "Skills",
+  experience: "Experience",
+  projects: "Projects",
+  education: "Education",
+  certifications: "Certifications",
+  contact: "Contact",
+};
 
 export default async function PublicLayout({ children }: { children: ReactNode }) {
   // Tag-cached reads. They run concurrently and, once the page is static, never
   // touch the database on a visitor request at all.
-  const [profile, socialLinks, settings, certifications] = await Promise.all([
+  const [profile, socialLinks, settings, sections] = await Promise.all([
     getProfile(),
     getSocialLinks(),
     getSiteSettings(),
-    getCertifications(),
+    getSectionIndex(),
   ]);
 
-  // Sections with no content render nothing, so their nav entries would scroll
-  // to a missing anchor. Build the menu from what actually exists.
-  const items =
-    certifications.length > 0
-      ? [
-          ...BASE_NAV.slice(0, 5),
-          { id: "certifications", label: "Certifications" },
-          ...BASE_NAV.slice(5),
-        ]
-      : BASE_NAV;
+  // Same source of truth as the section numbering, so the two cannot drift.
+  const items: NavItem[] = sections.ids
+    .filter((id) => NAV_LABELS[id])
+    .map((id) => ({ id, label: NAV_LABELS[id]! }));
 
   return (
     <div className="flex min-h-dvh flex-col">
