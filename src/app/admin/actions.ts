@@ -148,18 +148,16 @@ export const createSkillCategory = adminAction(async (formData) => {
   const parsed = parse(skillCategorySchema, formData);
   if (!parsed.ok) return parsed.state;
 
-  const existing = await svc.listSkillCategories();
-  if (existing.some((c) => c.slug === parsed.data.slug)) {
-    return failure("Please correct the highlighted fields.", {
-      slug: "A category with this slug already exists.",
-    });
-  }
-
   await svc.createSkillCategory({
     ...parsed.data,
+    // Two categories may legitimately share a display name; the slug is an
+    // internal key, so make it unique rather than rejecting the submission.
+    slug: await svc.uniqueSkillCategorySlug(parsed.data.slug),
     displayOrder: await svc.nextDisplayOrder(t.skillCategories),
   });
+
   revalidateContent([TAGS.skills]);
+  revalidatePath("/admin/skills");
 
   return success("Category added.");
 });
@@ -169,17 +167,17 @@ export const updateSkillCategory = adminAction(async (formData) => {
   if (!parsed.ok) return parsed.state;
 
   const categoryId = id(formData);
-  const existing = await svc.listSkillCategories();
-  if (existing.some((c) => c.slug === parsed.data.slug && c.id !== categoryId)) {
-    return failure("Please correct the highlighted fields.", {
-      slug: "A category with this slug already exists.",
-    });
-  }
+  const updated = await svc.updateSkillCategory(categoryId, {
+    ...parsed.data,
+    slug: await svc.uniqueSkillCategorySlug(parsed.data.slug, categoryId),
+  });
 
-  await svc.updateSkillCategory(categoryId, parsed.data);
+  if (!updated) return failure("That category no longer exists.");
+
   revalidateContent([TAGS.skills]);
+  revalidatePath("/admin/skills");
 
-  return success("Category updated.");
+  return success(`Renamed to "${updated.name}".`);
 });
 
 export async function deleteSkillCategoryAction(categoryId: number): Promise<ActionState> {

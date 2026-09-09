@@ -147,6 +147,30 @@ export function listSkillCategories() {
     .orderBy(asc(t.skillCategories.displayOrder), asc(t.skillCategories.id));
 }
 
+/**
+ * Returns a free category slug, disambiguating with a numeric suffix.
+ *
+ * A category slug never appears in a URL or anywhere on the public site — it is
+ * derived from the name purely as a stable key. So a collision must not be
+ * reported as a validation error: that would veto a rename because of a field
+ * the admin cannot see or edit. It is silently made unique instead.
+ */
+export async function uniqueSkillCategorySlug(base: string, exceptId?: number): Promise<string> {
+  const rows = await db
+    .select({ id: t.skillCategories.id, slug: t.skillCategories.slug })
+    .from(t.skillCategories);
+
+  const taken = new Set(rows.filter((row) => row.id !== exceptId).map((row) => row.slug));
+  if (!taken.has(base)) return base;
+
+  for (let suffix = 2; suffix < 1000; suffix += 1) {
+    const candidate = `${base}-${suffix}`;
+    if (!taken.has(candidate)) return candidate;
+  }
+
+  return `${base}-${Date.now()}`;
+}
+
 export async function createSkillCategory(values: typeof t.skillCategories.$inferInsert) {
   const [row] = await db.insert(t.skillCategories).values(values).returning();
   return row;

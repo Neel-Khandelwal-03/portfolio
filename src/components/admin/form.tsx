@@ -400,12 +400,17 @@ export function useActionToast(state: ActionState) {
   const toast = useToast();
 
   useEffect(() => {
-    if (state.status === "success" && state.message) toast(state.message, "success");
-    if (state.status === "error" && state.message && !state.fieldErrors) {
-      toast(state.message, "error");
-    }
+    if (!state.message) return;
+
+    // A failure is always announced, even when the form also renders the error
+    // inline. Suppressing the toast whenever `fieldErrors` was present used to
+    // make a rejected submission completely invisible in the compact inline
+    // forms, which have no room for an error summary — pressing Save simply
+    // appeared to do nothing.
+    if (state.status === "success") toast(state.message, "success");
+    else if (state.status === "error") toast(state.message, "error");
     // `key` changes on every action response, so repeat saves still notify.
-  }, [state.key, state.status, state.message, state.fieldErrors, toast]);
+  }, [state.key, state.status, state.message, toast]);
 }
 
 export function FormCard({ children, className }: { children: ReactNode; className?: string }) {

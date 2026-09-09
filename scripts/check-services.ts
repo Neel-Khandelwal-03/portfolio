@@ -101,6 +101,43 @@ async function main() {
   await svc.deleteSkillCategory(category.id);
   check("skills cascade-delete with their category", (await svc.getSkill(skill.id)) === null);
 
+  /* Regression: renaming a category to a name whose slug is already taken used
+     to be rejected on a hidden field, so the rename silently did nothing. The
+     slug is internal, so it must be disambiguated rather than block the save. */
+  console.log("\nCategory slug collisions");
+  const first = await svc.createSkillCategory({
+    name: "Collision Test",
+    slug: "collision-test",
+    displayOrder: 998,
+  });
+  const second = await svc.createSkillCategory({
+    name: "Collision Test Other",
+    slug: await svc.uniqueSkillCategorySlug("collision-test"),
+    displayOrder: 999,
+  });
+
+  check(
+    "a taken slug is disambiguated, not rejected",
+    second.slug === "collision-test-2",
+    second.slug,
+  );
+  check(
+    "renaming onto a taken slug still succeeds",
+    (
+      await svc.updateSkillCategory(second.id, {
+        name: "Collision Test",
+        slug: await svc.uniqueSkillCategorySlug("collision-test", second.id),
+      })
+    )?.name === "Collision Test",
+  );
+  check(
+    "a category keeps its own slug when renamed to the same name",
+    (await svc.uniqueSkillCategorySlug("collision-test", first.id)) === "collision-test",
+  );
+
+  await svc.deleteSkillCategory(first.id);
+  await svc.deleteSkillCategory(second.id);
+
   console.log(
     failures === 0
       ? "\nAll service-layer checks passed.\n"

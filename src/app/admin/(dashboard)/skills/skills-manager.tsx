@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 
 import {
   createSkill,
@@ -165,31 +165,55 @@ function RenameCategoryForm({ group, onDone }: { group: SkillGroup; onDone: () =
   const [name, setName] = useState(group.name);
   useActionToast(state);
 
-  return (
-    <form action={formAction} className="flex w-full flex-wrap items-center gap-2">
-      <input type="hidden" name="id" value={group.id} />
-      <input type="hidden" name="slug" value={slugify(name)} />
-      <input type="hidden" name="displayOrder" value={group.displayOrder} />
+  // Close the editor once the rename lands, so the header goes back to showing
+  // the new title. Leaving the form open made a successful save look like
+  // nothing had happened.
+  const lastHandled = useRef<number | undefined>(undefined);
+  useEffect(() => {
+    if (state.status === "success" && state.key && state.key !== lastHandled.current) {
+      lastHandled.current = state.key;
+      onDone();
+    }
+  }, [state.status, state.key, onDone]);
 
-      <label htmlFor={`rename-${group.id}`} className="sr-only">
-        Category name
-      </label>
-      <input
-        id={`rename-${group.id}`}
-        name="name"
-        value={name}
-        onChange={(event) => setName(event.target.value)}
-        autoFocus
-        className={`${INPUT} max-w-xs flex-1`}
-      />
-      <SubmitButton>Save</SubmitButton>
-      <button
-        type="button"
-        onClick={onDone}
-        className="border-border-base hover:bg-bg-subtle inline-flex h-10 items-center rounded-lg border px-3 text-sm font-medium"
-      >
-        Cancel
-      </button>
+  const error = state.fieldErrors?.name ?? state.fieldErrors?.slug ?? state.fieldErrors?._form;
+
+  return (
+    <form action={formAction} className="w-full">
+      <div className="flex w-full flex-wrap items-center gap-2">
+        <input type="hidden" name="id" value={group.id} />
+        <input type="hidden" name="slug" value={slugify(name)} />
+        <input type="hidden" name="displayOrder" value={group.displayOrder} />
+
+        <label htmlFor={`rename-${group.id}`} className="sr-only">
+          Category name
+        </label>
+        <input
+          id={`rename-${group.id}`}
+          name="name"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          autoFocus
+          required
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? `rename-${group.id}-error` : undefined}
+          className={`${INPUT} max-w-xs flex-1`}
+        />
+        <SubmitButton>Save</SubmitButton>
+        <button
+          type="button"
+          onClick={onDone}
+          className="border-border-base hover:bg-bg-subtle inline-flex h-10 items-center rounded-lg border px-3 text-sm font-medium"
+        >
+          Cancel
+        </button>
+      </div>
+
+      {error ? (
+        <p id={`rename-${group.id}-error`} className="text-danger mt-2 text-[13px]">
+          {error}
+        </p>
+      ) : null}
     </form>
   );
 }
@@ -213,36 +237,55 @@ function SkillRow({
   const [state, formAction] = useActionState<ActionState, FormData>(updateSkill, IDLE);
   useActionToast(state);
 
+  // Close the editor once the save lands, matching the category rename.
+  const lastHandled = useRef<number | undefined>(undefined);
+  useEffect(() => {
+    if (state.status === "success" && state.key && state.key !== lastHandled.current) {
+      lastHandled.current = state.key;
+      setEditing(false);
+    }
+  }, [state.status, state.key]);
+
   if (editing) {
+    const error = state.fieldErrors?.name ?? state.fieldErrors?._form;
+
     return (
       <li>
-        <form
-          action={formAction}
-          className="border-accent bg-bg flex flex-wrap items-center gap-2 rounded-lg border p-2"
-        >
-          <input type="hidden" name="id" value={skill.id} />
-          <input type="hidden" name="categoryId" value={categoryId} />
-          <input type="hidden" name="displayOrder" value={skill.displayOrder} />
-          <input type="hidden" name="isVisible" value={skill.isVisible ? "on" : ""} />
+        <form action={formAction} className="border-accent bg-bg rounded-lg border p-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <input type="hidden" name="id" value={skill.id} />
+            <input type="hidden" name="categoryId" value={categoryId} />
+            <input type="hidden" name="displayOrder" value={skill.displayOrder} />
+            <input type="hidden" name="isVisible" value={skill.isVisible ? "on" : ""} />
 
-          <label htmlFor={`skill-${skill.id}`} className="sr-only">
-            Skill name
-          </label>
-          <input
-            id={`skill-${skill.id}`}
-            name="name"
-            defaultValue={skill.name}
-            autoFocus
-            className={`${INPUT} min-w-[160px] flex-1`}
-          />
-          <SubmitButton>Save</SubmitButton>
-          <button
-            type="button"
-            onClick={() => setEditing(false)}
-            className="border-border-base hover:bg-bg-subtle inline-flex h-10 items-center rounded-lg border px-3 text-sm font-medium"
-          >
-            Cancel
-          </button>
+            <label htmlFor={`skill-${skill.id}`} className="sr-only">
+              Skill name
+            </label>
+            <input
+              id={`skill-${skill.id}`}
+              name="name"
+              defaultValue={skill.name}
+              autoFocus
+              required
+              aria-invalid={Boolean(error)}
+              aria-describedby={error ? `skill-${skill.id}-error` : undefined}
+              className={`${INPUT} min-w-[160px] flex-1`}
+            />
+            <SubmitButton>Save</SubmitButton>
+            <button
+              type="button"
+              onClick={() => setEditing(false)}
+              className="border-border-base hover:bg-bg-subtle inline-flex h-10 items-center rounded-lg border px-3 text-sm font-medium"
+            >
+              Cancel
+            </button>
+          </div>
+
+          {error ? (
+            <p id={`skill-${skill.id}-error`} className="text-danger mt-2 text-[13px]">
+              {error}
+            </p>
+          ) : null}
         </form>
       </li>
     );
