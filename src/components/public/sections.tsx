@@ -17,7 +17,7 @@ import {
   SparkIcon,
   TrophyIcon,
 } from "@/components/ui/icons";
-import { formatDateRange, formatFullDate, formatMonthYear, safeUrl } from "@/lib/utils";
+import { cn, formatDateRange, formatFullDate, formatMonthYear, safeUrl } from "@/lib/utils";
 import type {
   Achievement,
   Certification,
@@ -113,6 +113,52 @@ export function SkillsSection({ groups }: { groups: SkillGroup[] }) {
 /* Experience                                                                  */
 /* ========================================================================== */
 
+/**
+ * A labelled bullet list used by the experience timeline.
+ *
+ * Responsibilities and highlights share one component so their text edges line
+ * up exactly — previously one indented with `pl-4` and the other with a flex
+ * icon and gap, which left the two lists a few pixels out of alignment.
+ *
+ * The label also does the grouping work that spacing alone could not: the gap
+ * between blocks is now clearly larger than the gap between lines within a
+ * block, so description, responsibilities and highlights read as three things
+ * rather than one wall of text.
+ */
+function BulletGroup({
+  label,
+  items,
+  accent = false,
+}: {
+  label: string;
+  items: string[];
+  accent?: boolean;
+}) {
+  if (items.length === 0) return null;
+
+  return (
+    <div className="mt-5 max-w-2xl">
+      <p className="text-fg-subtle font-mono text-[10px] font-semibold tracking-[0.14em] uppercase">
+        {label}
+      </p>
+      <ul className="mt-2 space-y-2">
+        {items.map((line, index) => (
+          <li
+            key={index}
+            className={cn(
+              "text-fg-muted relative pl-4 text-sm leading-relaxed",
+              "before:absolute before:top-[0.6rem] before:left-0 before:h-1 before:w-1 before:rounded-full",
+              accent ? "before:bg-accent" : "before:bg-border-strong",
+            )}
+          >
+            {line}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export function ExperienceSection({ experiences }: { experiences: Experience[] }) {
   return (
     <Section
@@ -127,7 +173,7 @@ export function ExperienceSection({ experiences }: { experiences: Experience[] }
           description="Add internships and roles from the admin dashboard."
         />
       ) : (
-        <ol className="border-border-base relative space-y-8 border-l pl-6 sm:pl-8">
+        <ol className="border-border-base relative space-y-12 border-l pl-6 sm:pl-8">
           {experiences.map((item) => {
             const logo = safeUrl(item.logoUrl);
             const certificate = safeUrl(item.certificateUrl);
@@ -177,37 +223,16 @@ export function ExperienceSection({ experiences }: { experiences: Experience[] }
                 </p>
 
                 {item.description ? (
-                  <p className="text-fg-muted mt-3 max-w-2xl text-sm leading-relaxed">
+                  <p className="text-fg-muted mt-4 max-w-2xl text-sm leading-relaxed">
                     {item.description}
                   </p>
                 ) : null}
 
-                {item.responsibilities.length > 0 ? (
-                  <ul className="mt-3 max-w-2xl space-y-1.5">
-                    {item.responsibilities.map((line, index) => (
-                      <li
-                        key={index}
-                        className="text-fg-muted before:bg-border-strong relative pl-4 text-sm leading-relaxed before:absolute before:top-[0.6rem] before:left-0 before:h-1 before:w-1 before:rounded-full"
-                      >
-                        {line}
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
-
-                {item.achievements.length > 0 ? (
-                  <ul className="mt-3 max-w-2xl space-y-1.5">
-                    {item.achievements.map((line, index) => (
-                      <li key={index} className="text-fg-muted flex gap-2 text-sm leading-relaxed">
-                        <TrophyIcon width={13} height={13} className="text-accent mt-1 shrink-0" />
-                        {line}
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
+                <BulletGroup label="Responsibilities" items={item.responsibilities} />
+                <BulletGroup label="Highlights" items={item.achievements} accent />
 
                 {item.technologies.length > 0 ? (
-                  <ul className="mt-4 flex flex-wrap gap-1.5">
+                  <ul className="mt-5 flex flex-wrap gap-1.5">
                     {item.technologies.map((tech) => (
                       <li key={tech}>
                         <TechChip>{tech}</TechChip>
@@ -221,7 +246,7 @@ export function ExperienceSection({ experiences }: { experiences: Experience[] }
                     href={certificate}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-accent mt-4 inline-flex items-center gap-1.5 text-[13px] font-medium hover:underline"
+                    className="text-accent mt-5 inline-flex items-center gap-1.5 text-[13px] font-medium hover:underline"
                   >
                     <DocumentIcon width={13} height={13} />
                     View certificate
@@ -430,21 +455,10 @@ export function EducationSection({ education }: { education: Education[] }) {
                 </div>
 
                 {item.description ? (
-                  <p className="text-fg-muted mt-3 text-sm leading-relaxed">{item.description}</p>
+                  <p className="text-fg-muted mt-4 text-sm leading-relaxed">{item.description}</p>
                 ) : null}
 
-                {item.achievements.length > 0 ? (
-                  <ul className="mt-3 space-y-1.5">
-                    {item.achievements.map((line, index) => (
-                      <li
-                        key={index}
-                        className="text-fg-muted before:bg-border-strong relative pl-4 text-sm leading-relaxed before:absolute before:top-[0.6rem] before:left-0 before:h-1 before:w-1 before:rounded-full"
-                      >
-                        {line}
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
+                <BulletGroup label="Highlights" items={item.achievements} accent />
               </Card>
             </li>
           ))}
