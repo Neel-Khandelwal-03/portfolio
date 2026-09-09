@@ -11,6 +11,32 @@ import { cn } from "@/lib/utils";
 export type NavItem = { id: string; label: string };
 
 /**
+ * Returns the reader to the top of the homepage.
+ *
+ * Navigating to "/" while already on "/" is a no-op in the router, so the
+ * wordmark appeared dead once the page had been scrolled. This handles that
+ * case directly and also clears any `#section` left in the address bar by the
+ * nav, so the URL matches where the reader actually is.
+ *
+ * Modified and non-primary clicks fall through untouched, so open-in-new-tab
+ * still works. `scrollTo` is called without an explicit behaviour so the CSS
+ * `scroll-behavior` applies — which is already switched to `auto` under
+ * `prefers-reduced-motion`.
+ */
+function scrollToTop(event: React.MouseEvent<HTMLAnchorElement>) {
+  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
+    return;
+  }
+
+  event.preventDefault();
+  window.scrollTo({ top: 0, left: 0 });
+
+  if (window.location.hash) {
+    window.history.replaceState(null, "", window.location.pathname + window.location.search);
+  }
+}
+
+/**
  * Floating site navigation.
  *
  * A detached pill rather than a full-width bar: it reads as a deliberate
@@ -77,7 +103,13 @@ export function SiteNav({
 
   /* Condense once the page has scrolled ----------------------------------- */
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 16);
+    const onScroll = () => {
+      setScrolled(window.scrollY > 16);
+      // Back at the hero, no section is current. Without this the observer
+      // leaves the last section highlighted, because none of them are inside
+      // its band up here for it to react to.
+      if (window.scrollY < 80) setActive("");
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -107,9 +139,11 @@ export function SiteNav({
   return (
     <header className="no-print pointer-events-none fixed inset-x-0 top-0 z-50">
       <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 pt-3 sm:px-6 sm:pt-4">
-        {/* Wordmark */}
+        {/* Wordmark — also the way back to the top of the page */}
         <Link
           href="/"
+          onClick={onHome ? scrollToTop : undefined}
+          aria-label={onHome ? "Back to top" : undefined}
           className={cn(
             "pointer-events-auto flex items-center gap-2 rounded-full border px-4 py-2 text-[14px] font-semibold tracking-tight transition-all duration-300",
             scrolled
