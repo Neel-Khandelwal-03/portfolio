@@ -104,7 +104,7 @@ export function ProjectVisual({
       <div className="relative flex h-full flex-col justify-between p-6 sm:p-8">
         <p className="label text-fg-subtle">{project.category}</p>
 
-        <p className="text-fg/12 pointer-events-none font-mono text-[clamp(4rem,12vw,7rem)] leading-none font-medium tracking-tighter select-none">
+        <p className="text-fg/12 tilt-parallax pointer-events-none font-mono text-[clamp(4rem,12vw,7rem)] leading-none font-medium tracking-tighter select-none">
           {mark}
         </p>
 

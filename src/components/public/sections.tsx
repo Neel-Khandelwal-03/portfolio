@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { ProjectVisual } from "@/components/public/project-visual";
+import { SkillGlobe } from "@/components/public/skill-globe";
+import { Tilt } from "@/components/public/tilt";
 import { TrackedLink } from "@/components/public/tracked-link";
 import { Container, EmptyState, Eyebrow, Prose, Section, TechChip } from "@/components/ui";
 import {
@@ -104,33 +106,44 @@ export function SkillsSection({ groups, index }: { groups: SkillGroup[]; index: 
           description="Add categories and skills from the admin dashboard."
         />
       ) : (
-        <ul className="reveal border-border-hair divide-border-hair divide-y border-y">
-          {populated.map((group) => (
-            <li
-              key={group.id}
-              className="hover:bg-bg-subtle/60 group grid gap-4 py-6 transition-colors duration-200 sm:grid-cols-[minmax(0,180px)_minmax(0,1fr)] sm:gap-8 sm:px-2"
-            >
-              <div className="flex items-baseline gap-3">
-                <h3 className="label text-fg-subtle group-hover:text-accent transition-colors duration-200">
-                  {group.name}
-                </h3>
-                <span className="text-fg-subtle/60 font-mono text-[11px] tabular-nums sm:ml-auto">
-                  {String(group.skills.length).padStart(2, "0")}
-                </span>
-              </div>
+        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-14">
+          {/* Decorative: the same skills are listed as text in the table
+              beside it, which is what screen readers and search engines get. */}
+          <div className="reveal">
+            <SkillGlobe
+              skills={populated.flatMap((group) => group.skills.map((skill) => skill.name))}
+            />
+            <p className="label text-fg-subtle/70 mt-3 text-center">Drag to spin</p>
+          </div>
 
-              <ul className="flex flex-wrap gap-2">
-                {group.skills.map((skill) => (
-                  <li key={skill.id}>
-                    <span className="border-border-base bg-bg-raised text-fg-muted hover:border-accent-line hover:text-fg inline-block rounded-lg border px-3 py-1.5 text-[13px] font-medium transition-colors duration-200">
-                      {skill.name}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </li>
-          ))}
-        </ul>
+          <ul className="reveal border-border-hair divide-border-hair divide-y border-y">
+            {populated.map((group) => (
+              <li
+                key={group.id}
+                className="hover:bg-bg-subtle/60 group grid gap-4 py-6 transition-colors duration-200 sm:grid-cols-[minmax(0,180px)_minmax(0,1fr)] sm:gap-8 sm:px-2"
+              >
+                <div className="flex items-baseline gap-3">
+                  <h3 className="label text-fg-subtle group-hover:text-accent transition-colors duration-200">
+                    {group.name}
+                  </h3>
+                  <span className="text-fg-subtle/60 font-mono text-[11px] tabular-nums sm:ml-auto">
+                    {String(group.skills.length).padStart(2, "0")}
+                  </span>
+                </div>
+
+                <ul className="flex flex-wrap gap-2">
+                  {group.skills.map((skill) => (
+                    <li key={skill.id}>
+                      <span className="border-border-base bg-bg-raised text-fg-muted hover:border-accent-line hover:text-fg inline-block rounded-lg border px-3 py-1.5 text-[13px] font-medium transition-colors duration-200">
+                        {skill.name}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </Section>
   );
@@ -316,12 +329,17 @@ function FeatureBlock({ project, index }: { project: Project; index: number }) {
         className={cn("block focus-visible:outline-none", flipped ? "lg:order-2" : "lg:order-1")}
         tabIndex={-1}
       >
-        <ProjectVisual
-          project={project}
-          priority={index === 0}
-          className="group-hover:border-border-strong aspect-[16/10] transition-colors duration-300"
-          sizes="(max-width: 1024px) 100vw, 560px"
-        />
+        {/* Rises out of perspective on scroll, then tilts toward the pointer. */}
+        <div className="rise">
+          <Tilt className="rounded-card">
+            <ProjectVisual
+              project={project}
+              priority={index === 0}
+              className="group-hover:border-border-strong aspect-[16/10] transition-colors duration-300"
+              sizes="(max-width: 1024px) 100vw, 560px"
+            />
+          </Tilt>
+        </div>
       </Link>
 
       <div className={flipped ? "lg:order-1" : "lg:order-2"}>
@@ -400,81 +418,7 @@ function FeatureBlock({ project, index }: { project: Project; index: number }) {
   );
 }
 
-/** Compact row used for projects beyond the featured set. */
-export function ProjectRow({ project }: { project: Project }) {
-  const github = safeUrl(project.githubUrl);
-  const live = safeUrl(project.liveUrl);
-
-  return (
-    <li className="group hover:bg-bg-subtle/60 relative grid gap-3 py-6 transition-colors duration-200 sm:grid-cols-[minmax(0,1fr)_minmax(0,auto)] sm:items-center sm:gap-8 sm:px-2">
-      <div className="min-w-0">
-        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <h3 className="text-[17px] font-semibold">
-            <Link
-              href={`/projects/${project.slug}`}
-              className="group-hover:text-accent transition-colors duration-200 after:absolute after:inset-0"
-            >
-              {project.title}
-            </Link>
-          </h3>
-          <span className="label text-fg-subtle/70">{project.category}</span>
-        </div>
-
-        {project.summary ? (
-          <p className="text-fg-muted mt-2 line-clamp-2 max-w-2xl text-sm leading-relaxed">
-            {project.summary}
-          </p>
-        ) : null}
-
-        {project.technologies.length > 0 ? (
-          <ul className="mt-3 flex flex-wrap gap-1.5">
-            {project.technologies.slice(0, 6).map((tech) => (
-              <li key={tech}>
-                <TechChip>{tech}</TechChip>
-              </li>
-            ))}
-          </ul>
-        ) : null}
-      </div>
-
-      <div className="text-fg-subtle relative z-10 flex items-center gap-1">
-        {live ? (
-          <TrackedLink
-            event="project_live"
-            detail={project.slug}
-            href={live}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`${project.title} live demo`}
-            className="hover:bg-bg-raised hover:text-fg grid h-9 w-9 place-items-center rounded-lg transition-colors duration-200"
-          >
-            <ExternalLinkIcon width={15} height={15} />
-          </TrackedLink>
-        ) : null}
-        {github ? (
-          <TrackedLink
-            event="project_github"
-            detail={project.slug}
-            href={github}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`${project.title} source on GitHub`}
-            className="hover:bg-bg-raised hover:text-fg grid h-9 w-9 place-items-center rounded-lg transition-colors duration-200"
-          >
-            <GitHubIcon width={15} height={15} />
-          </TrackedLink>
-        ) : null}
-        <ArrowRightIcon
-          width={16}
-          height={16}
-          className="ml-1 transition-transform duration-200 group-hover:translate-x-1"
-        />
-      </div>
-    </li>
-  );
-}
-
-/** Card used on the /projects index, where every project gets equal weight. */
+/** Project card, used for the homepage deck and the /projects index. */
 export function ProjectCard({
   project,
   priority = false,
@@ -486,88 +430,90 @@ export function ProjectCard({
   const live = safeUrl(project.liveUrl);
 
   return (
-    <article className="group border-border-base bg-bg-raised rounded-card hover:border-border-strong hover:shadow-raised relative flex flex-col overflow-hidden border transition-all duration-300">
-      <ProjectVisual
-        project={project}
-        priority={priority}
-        className="aspect-[16/10] rounded-none border-0 border-b"
-        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"
-      />
+    <Tilt className="rounded-card h-full">
+      <article className="group border-border-base bg-bg-raised rounded-card hover:border-border-strong hover:shadow-raised relative flex h-full flex-col overflow-hidden border transition-all duration-300">
+        <ProjectVisual
+          project={project}
+          priority={priority}
+          className="aspect-[16/10] rounded-none border-0 border-b"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"
+        />
 
-      <div className="flex flex-1 flex-col p-5">
-        <p className="label text-fg-subtle/70">{project.category}</p>
+        <div className="flex flex-1 flex-col p-5">
+          <p className="label text-fg-subtle/70">{project.category}</p>
 
-        <h3 className="mt-3 text-[17px] font-semibold">
-          <Link
-            href={`/projects/${project.slug}`}
-            className="group-hover:text-accent transition-colors duration-200 after:absolute after:inset-0"
-          >
-            {project.title}
-          </Link>
-        </h3>
+          <h3 className="mt-3 text-[17px] font-semibold">
+            <Link
+              href={`/projects/${project.slug}`}
+              className="group-hover:text-accent transition-colors duration-200 after:absolute after:inset-0"
+            >
+              {project.title}
+            </Link>
+          </h3>
 
-        {project.summary ? (
-          <p className="text-fg-muted mt-2 line-clamp-3 text-sm leading-relaxed">
-            {project.summary}
-          </p>
-        ) : null}
+          {project.summary ? (
+            <p className="text-fg-muted mt-2 line-clamp-3 text-sm leading-relaxed">
+              {project.summary}
+            </p>
+          ) : null}
 
-        {project.technologies.length > 0 ? (
-          <ul className="mt-4 flex flex-wrap gap-1.5">
-            {project.technologies.slice(0, 4).map((tech) => (
-              <li key={tech}>
-                <TechChip>{tech}</TechChip>
-              </li>
-            ))}
-            {project.technologies.length > 4 ? (
-              <li>
-                <TechChip>+{project.technologies.length - 4}</TechChip>
-              </li>
-            ) : null}
-          </ul>
-        ) : null}
+          {project.technologies.length > 0 ? (
+            <ul className="mt-4 flex flex-wrap gap-1.5">
+              {project.technologies.slice(0, 4).map((tech) => (
+                <li key={tech}>
+                  <TechChip>{tech}</TechChip>
+                </li>
+              ))}
+              {project.technologies.length > 4 ? (
+                <li>
+                  <TechChip>+{project.technologies.length - 4}</TechChip>
+                </li>
+              ) : null}
+            </ul>
+          ) : null}
 
-        <div className="mt-5 flex items-center gap-1 pt-1">
-          <span className="text-accent inline-flex items-center gap-1.5 text-[13px] font-medium">
-            Case study
-            <ArrowRightIcon
-              width={13}
-              height={13}
-              className="transition-transform duration-200 group-hover:translate-x-1"
-            />
-          </span>
+          <div className="mt-5 flex items-center gap-1 pt-1">
+            <span className="text-accent inline-flex items-center gap-1.5 text-[13px] font-medium">
+              Case study
+              <ArrowRightIcon
+                width={13}
+                height={13}
+                className="transition-transform duration-200 group-hover:translate-x-1"
+              />
+            </span>
 
-          <span className="text-fg-subtle relative z-10 ml-auto flex items-center gap-1">
-            {github ? (
-              <TrackedLink
-                event="project_github"
-                detail={project.slug}
-                href={github}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`${project.title} source on GitHub`}
-                className="hover:bg-bg-subtle hover:text-fg grid h-8 w-8 place-items-center rounded-md"
-              >
-                <GitHubIcon width={15} height={15} />
-              </TrackedLink>
-            ) : null}
-            {live ? (
-              <TrackedLink
-                event="project_live"
-                detail={project.slug}
-                href={live}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`${project.title} live demo`}
-                className="hover:bg-bg-subtle hover:text-fg grid h-8 w-8 place-items-center rounded-md"
-              >
-                <ExternalLinkIcon width={15} height={15} />
-              </TrackedLink>
-            ) : null}
-          </span>
+            <span className="text-fg-subtle relative z-10 ml-auto flex items-center gap-1">
+              {github ? (
+                <TrackedLink
+                  event="project_github"
+                  detail={project.slug}
+                  href={github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${project.title} source on GitHub`}
+                  className="hover:bg-bg-subtle hover:text-fg grid h-8 w-8 place-items-center rounded-md"
+                >
+                  <GitHubIcon width={15} height={15} />
+                </TrackedLink>
+              ) : null}
+              {live ? (
+                <TrackedLink
+                  event="project_live"
+                  detail={project.slug}
+                  href={live}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${project.title} live demo`}
+                  className="hover:bg-bg-subtle hover:text-fg grid h-8 w-8 place-items-center rounded-md"
+                >
+                  <ExternalLinkIcon width={15} height={15} />
+                </TrackedLink>
+              ) : null}
+            </span>
+          </div>
         </div>
-      </div>
-    </article>
+      </article>
+    </Tilt>
   );
 }
 
@@ -607,10 +553,13 @@ export function ProjectsSection({
 
           {rest.length > 0 ? (
             <div className={featured.length > 0 ? "mt-24" : ""}>
-              {featured.length > 0 ? <Eyebrow className="mb-2">More work</Eyebrow> : null}
-              <ul className="border-border-hair divide-border-hair divide-y border-y">
+              {featured.length > 0 ? <Eyebrow className="mb-6">More work</Eyebrow> : null}
+              {/* Starts as one tilted deck and fans out to the grid on scroll. */}
+              <ul className="deck grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {rest.map((project) => (
-                  <ProjectRow key={project.id} project={project} />
+                  <li key={project.id}>
+                    <ProjectCard project={project} />
+                  </li>
                 ))}
               </ul>
             </div>
@@ -646,13 +595,7 @@ export function ProjectsSection({
  * leave more border than content, so the dates sit in a mono gutter and the
  * detail flows beside them.
  */
-export function EducationSection({
-  education,
-  index,
-}: {
-  education: Education[];
-  index: string;
-}) {
+export function EducationSection({ education, index }: { education: Education[]; index: string }) {
   return (
     <Section id="education" index={index} eyebrow="Education" title="Academic background">
       {education.length === 0 ? (
@@ -728,7 +671,12 @@ export function CertificationsSection({
   if (certifications.length === 0) return null;
 
   return (
-    <Section id="certifications" index={index} eyebrow="Certifications" title="Verified credentials">
+    <Section
+      id="certifications"
+      index={index}
+      eyebrow="Certifications"
+      title="Verified credentials"
+    >
       <ul className="reveal border-border-hair divide-border-hair divide-y border-y">
         {certifications.map((item) => {
           const credential = safeUrl(item.credentialUrl);

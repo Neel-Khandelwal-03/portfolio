@@ -333,6 +333,261 @@
   }
 }
 
+/* ========================================================================== */
+/* 3D: tilt cards                                                              */
+/*                                                                             */
+/* <Tilt> writes --px / --py (-0.5…0.5) from the pointer; everything visual is */
+/* derived here, so a pointer move is one style write and no React render.     */
+/* ========================================================================== */
+
+:root {
+  --glare: rgb(255 255 255 / 0.55);
+}
+
+.dark {
+  --glare: rgb(255 255 255 / 0.07);
+}
+
+@layer utilities {
+  .tilt {
+    transform: perspective(1000px) rotateX(calc(var(--py, 0) * -9deg))
+      rotateY(calc(var(--px, 0) * 9deg));
+    transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .tilt[data-tilting] {
+    transition-duration: 0.12s;
+  }
+
+  .tilt-glare {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    background: radial-gradient(
+      26rem circle at calc(50% + var(--px, 0) * 100%) calc(50% + var(--py, 0) * 100%),
+      var(--glare),
+      transparent 60%
+    );
+  }
+
+  .tilt[data-tilting] .tilt-glare {
+    opacity: 1;
+  }
+
+  /* A layer that drifts against the tilt, which is what sells the depth. */
+  .tilt-parallax {
+    translate: calc(var(--px, 0) * -16px) calc(var(--py, 0) * -16px);
+    transition: translate 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+
+  .tilt[data-tilting] .tilt-parallax {
+    transition-duration: 0.12s;
+  }
+}
+
+/* ========================================================================== */
+/* 3D: skill globe                                                             */
+/*                                                                             */
+/* Each tag carries --x/--y/--z on a unit sphere. Size comes from container    */
+/* query units, so the server can render the first frame before any JS runs.  */
+/* ========================================================================== */
+
+@layer utilities {
+  .globe {
+    position: relative;
+    width: 100%;
+    max-width: 30rem;
+    margin-inline: auto;
+    aspect-ratio: 1;
+    container-type: size;
+    cursor: grab;
+    /* Horizontal drags spin the globe; vertical swipes still scroll the page. */
+    touch-action: pan-y;
+    user-select: none;
+  }
+
+  .globe[data-dragging] {
+    cursor: grabbing;
+  }
+
+  .globe-ring {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 84cqmin;
+    height: 84cqmin;
+    translate: -50% -50%;
+    border: 1px solid var(--border-hair);
+    border-radius: 9999px;
+    pointer-events: none;
+  }
+
+  .globe-ring--equator {
+    height: 26cqmin;
+    border-style: dashed;
+    border-color: var(--border);
+  }
+
+  .globe-tag {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    white-space: nowrap;
+    pointer-events: none;
+    font-family: var(--font-mono);
+    font-size: clamp(0.6875rem, 3.2cqmin, 0.875rem);
+    line-height: 1;
+    transform: translate(-50%, -50%)
+      translate3d(calc(var(--x) * 42cqmin), calc(var(--y) * 42cqmin), 0)
+      scale(calc(0.7 + (var(--z) + 1) * 0.22));
+    opacity: calc(0.22 + (var(--z) + 1) * 0.39);
+    z-index: calc(100 + var(--z) * 100);
+    /* Tags facing the reader pick up the accent; those behind stay muted. */
+    color: color-mix(
+      in srgb,
+      var(--accent) clamp(0%, calc((var(--z) - 0.4) * 170%), 100%),
+      var(--fg-muted)
+    );
+    will-change: transform, opacity;
+  }
+}
+
+/* ========================================================================== */
+/* 3D: scroll-driven project deck and rise                                     */
+/*                                                                             */
+/* Pure CSS. The "more work" cards start piled into one tilted deck and fan    */
+/* out to their grid slots as the section scrolls into view. Feature visuals   */
+/* rise out of perspective. Browsers without scroll-driven animations — and    */
+/* anyone who prefers reduced motion — simply see the finished layout.         */
+/* ========================================================================== */
+
+@layer utilities {
+  .deck {
+    --gap: 1.25rem;
+  }
+
+  .deck > * {
+    --dx: 0;
+    --dy: 0;
+    --rz: 0deg;
+  }
+
+  .deck > :nth-child(1) {
+    --rz: -5deg;
+  }
+  .deck > :nth-child(2) {
+    --rz: 3deg;
+  }
+  .deck > :nth-child(3) {
+    --rz: -2deg;
+  }
+  .deck > :nth-child(4) {
+    --rz: 5deg;
+  }
+  .deck > :nth-child(5) {
+    --rz: -3deg;
+  }
+  .deck > :nth-child(6) {
+    --rz: 2deg;
+  }
+
+  /* Two columns: pile between them, rows collapse upward. */
+  @media (min-width: 40rem) and (max-width: 63.99rem) {
+    .deck > :nth-child(odd) {
+      --dx: 0.5;
+    }
+    .deck > :nth-child(even) {
+      --dx: -0.5;
+    }
+    .deck > :nth-child(n + 3) {
+      --dy: -1;
+    }
+    .deck > :nth-child(n + 5) {
+      --dy: -2;
+    }
+  }
+
+  /* Three columns: pile on the middle column of the first row. */
+  @media (min-width: 64rem) {
+    .deck > :nth-child(3n + 1) {
+      --dx: 1;
+    }
+    .deck > :nth-child(3n + 2) {
+      --dx: 0;
+    }
+    .deck > :nth-child(3n) {
+      --dx: -1;
+    }
+    .deck > :nth-child(n + 4) {
+      --dy: -1;
+    }
+  }
+}
+
+@keyframes deck-in {
+  from {
+    transform: perspective(1400px)
+      translate(calc(var(--dx) * (100% + var(--gap))), calc(var(--dy) * (100% + var(--gap))))
+      rotateX(34deg) rotateZ(var(--rz)) scale(0.92);
+  }
+  to {
+    transform: perspective(1400px);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    transform: perspective(1200px) rotateX(18deg) translateY(48px) scale(0.96);
+  }
+  to {
+    transform: perspective(1200px);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .deck {
+      view-timeline-name: --deck;
+    }
+
+    /* One column: no deck to fan out, so each card tips up on its own. */
+    .deck > * {
+      animation: deck-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 30%;
+    }
+
+    /* Wider: every card shares the grid's timeline, so the deck moves as one. */
+    @media (min-width: 40rem) {
+      .deck > * {
+        animation-timeline: --deck;
+        animation-range: entry 10% cover 45%;
+      }
+    }
+
+    .rise {
+      animation: rise-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 35%;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tilt,
+  .tilt-parallax {
+    transform: none !important;
+    translate: none !important;
+  }
+
+  .tilt-glare {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
