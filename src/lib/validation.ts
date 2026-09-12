@@ -213,6 +213,46 @@ export const screenshotSchema = z.object({
   caption: z.string().trim().max(200).optional(),
 });
 
+export const metricSchema = z.object({
+  value: z.string().trim().min(1, "Every metric needs a value and a label.").max(24),
+  label: z.string().trim().min(1, "Every metric needs a value and a label.").max(40),
+});
+
+/**
+ * A repeatable field submitted as one hidden JSON input, the same shape the
+ * screenshots field uses. Rows left blank in the form are dropped here rather
+ * than becoming empty tiles on the public page.
+ */
+const jsonRows = <S extends z.ZodType>(row: S, max: number, tooMany: string) =>
+  z
+    .union([z.string(), z.array(z.unknown())])
+    .nullish()
+    .transform((value) => {
+      if (value == null) return [];
+      if (Array.isArray(value)) return value;
+      if (!value.trim()) return [];
+      try {
+        const parsed: unknown = JSON.parse(value);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    })
+    .transform((rows) =>
+      rows.filter(
+        (r) =>
+          r != null &&
+          typeof r === "object" &&
+          Object.values(r as Record<string, unknown>).some(
+            (v) => typeof v === "string" && v.trim() !== "",
+          ),
+      ),
+    )
+    .pipe(z.array(row).max(max, tooMany));
+
+/** A case-study prose block. Blank means "do not render this section". */
+const caseStudyText = z.string().trim().max(6000).default("");
+
 export const projectSchema = z
   .object({
     title: z.string().trim().min(1, "Title is required").max(200),
@@ -237,6 +277,12 @@ export const projectSchema = z
         }
       })
       .pipe(z.array(screenshotSchema).max(12)),
+    metrics: jsonRows(metricSchema, 3, "Three metrics at most."),
+    problem: caseStudyText,
+    approach: caseStudyText,
+    architecture: caseStudyText,
+    results: caseStudyText,
+    learned: caseStudyText,
     isFeatured: checkbox,
     isPublished: checkbox,
     startDate: optionalDate,

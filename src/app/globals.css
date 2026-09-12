@@ -608,6 +608,78 @@
 }
 
 /* ========================================================================== */
+/* View transitions — a card becomes the page it opens                         */
+/* ========================================================================== */
+
+/*
+ * Driven from `TransitionLink`, which names the clicked card's cover and title
+ * at click time so the browser can pair them with their counterparts on the
+ * case study. The rest of the page only cross-fades: the two named elements
+ * carry all the movement, so the eye keeps hold of the thing it clicked
+ * instead of re-finding it after a cut.
+ */
+
+::view-transition-old(root) {
+  animation: vt-fade-out 140ms ease-out both;
+}
+
+::view-transition-new(root) {
+  animation: vt-fade-in 260ms 60ms ease-out both;
+}
+
+::view-transition-group(project-media),
+::view-transition-group(project-title) {
+  animation-duration: 420ms;
+  animation-timing-function: cubic-bezier(0.22, 0.8, 0.24, 1);
+}
+
+/*
+ * The cover is 16:10 on a card and 2:1 on the page. Sizing both snapshots to
+ * the group and cropping them means the box morphs while the picture inside it
+ * stays the right shape, instead of squashing through the middle frames.
+ */
+::view-transition-old(project-media),
+::view-transition-new(project-media) {
+  height: 100%;
+  overflow: clip;
+  object-fit: cover;
+}
+
+/*
+ * The title changes size as well as position. Scaling glyphs between two sizes
+ * reads as a blur, so the group carries the movement and the text itself just
+ * swaps.
+ */
+::view-transition-old(project-title),
+::view-transition-new(project-title) {
+  height: 100%;
+  animation-duration: 240ms;
+}
+
+@keyframes vt-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes vt-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* `*` in the rules above does not match view-transition pseudo-elements, so
+   reduced motion has to silence them by name. `TransitionLink` also declines to
+   start a transition at all in this case; this covers the CSS-only path. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* ========================================================================== */
 /* Print — the portfolio should print as a clean document                      */
 /* ========================================================================== */
 

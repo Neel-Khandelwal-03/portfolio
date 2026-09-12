@@ -45,17 +45,29 @@ export function ProjectVisual({
   priority = false,
   className,
   sizes = "(max-width: 1024px) 100vw, 640px",
+  viewTransitionName,
 }: {
   project: Project;
   priority?: boolean;
   className?: string;
   sizes?: string;
+  /**
+   * Set only where exactly one visual exists on the page (a case study). On
+   * listings the name is applied to the clicked card by `TransitionLink`,
+   * because a view-transition name has to be unique across the document.
+   */
+  viewTransitionName?: string;
 }) {
   const cover = project.coverImageUrl?.trim();
+  const morph = {
+    "data-vt-media": "",
+    style: viewTransitionName ? { viewTransitionName } : undefined,
+  };
 
   if (cover) {
     return (
       <div
+        {...morph}
         className={cn(
           "border-border-base bg-bg-subtle rounded-card relative overflow-hidden border",
           className,
@@ -80,6 +92,7 @@ export function ProjectVisual({
 
   return (
     <div
+      {...morph}
       className={cn(
         "border-border-base bg-bg-subtle rounded-card relative overflow-hidden border",
         className,

@@ -144,6 +144,9 @@ export const skills = pgTable(
 
 export type Screenshot = { url: string; caption?: string };
 
+/** A measured outcome, e.g. `{ value: "42→11 min", label: "nightly runtime" }`. */
+export type ProjectMetric = { value: string; label: string };
+
 export const projects = pgTable(
   "projects",
   {
@@ -161,6 +164,17 @@ export const projects = pgTable(
       .$type<Screenshot[]>()
       .notNull()
       .default(sql`'[]'::jsonb`),
+    metrics: jsonb("metrics")
+      .$type<ProjectMetric[]>()
+      .notNull()
+      .default(sql`'[]'::jsonb`),
+    // Case-study sections. Each is optional; the public page renders only the
+    // ones that have been filled in, so older projects keep their old shape.
+    problem: text("problem").notNull().default(""),
+    approach: text("approach").notNull().default(""),
+    architecture: text("architecture").notNull().default(""),
+    results: text("results").notNull().default(""),
+    learned: text("learned").notNull().default(""),
     isFeatured: boolean("is_featured").notNull().default(false),
     isPublished: boolean("is_published").notNull().default(true),
     startDate: date("start_date"),

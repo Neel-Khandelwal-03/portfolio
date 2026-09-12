@@ -198,7 +198,64 @@ export function ProjectForm({ project }: { project?: Project }) {
             hint="16:9 works best. PNG, JPEG, WebP or AVIF, up to 5 MB."
             error={errors.coverImageUrl}
           />
-          <ScreenshotsField defaultValue={project?.screenshots ?? []} />
+          <ScreenshotsField
+            defaultValue={jsonField<Screenshot>(prior?.screenshots, project?.screenshots ?? [])}
+          />
+        </FormSection>
+
+        <FormSection title="Impact">
+          <MetricsField
+            defaultValue={jsonField<Metric>(prior?.metrics, project?.metrics ?? [])}
+            error={errors.metrics}
+          />
+        </FormSection>
+
+        <FormSection title="Case study">
+          <p className="text-fg-subtle -mt-1 text-[13px]">
+            Optional. Each section appears on the project page — and in its sticky contents rail —
+            only when you fill it in.
+          </p>
+
+          <TextArea
+            name="problem"
+            label="Problem"
+            rows={5}
+            hint="What was broken, missing or hard before this existed?"
+            defaultValue={keep("problem", project?.problem)}
+            error={errors.problem}
+          />
+          <TextArea
+            name="approach"
+            label="Approach"
+            rows={5}
+            hint="The decisions you made and why — the reasoning, not the feature list."
+            defaultValue={keep("approach", project?.approach)}
+            error={errors.approach}
+          />
+          <TextArea
+            name="architecture"
+            label="Architecture"
+            rows={5}
+            hint="How the pieces fit together: data flow, services, trade-offs."
+            defaultValue={keep("architecture", project?.architecture)}
+            error={errors.architecture}
+          />
+          <TextArea
+            name="results"
+            label="Results"
+            rows={5}
+            hint="What changed once it shipped. Numbers belong in Impact above."
+            defaultValue={keep("results", project?.results)}
+            error={errors.results}
+          />
+          <TextArea
+            name="learned"
+            label="What I learned"
+            rows={5}
+            hint="What you would do differently. This is the section interviewers read twice."
+            defaultValue={keep("learned", project?.learned)}
+            error={errors.learned}
+          />
         </FormSection>
 
         <FormSection title="Visibility">
@@ -237,6 +294,98 @@ export function ProjectForm({ project }: { project?: Project }) {
 /* -------------------------------------------------------------------------- */
 
 type Screenshot = { url: string; caption?: string };
+type Metric = { value: string; label: string };
+
+/**
+ * Restore a hidden JSON field from the values the action echoed back, so a
+ * rejected save does not silently discard rows the user just typed.
+ */
+function jsonField<T>(raw: string | undefined, fallback: T[]): T[] {
+  if (raw == null) return fallback;
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as T[]) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+const MAX_METRICS = 3;
+
+/**
+ * Up to three measured outcomes. Kept deliberately short — a value and a label
+ * — because these render as large figures on the public page, and a sentence
+ * dressed up as a metric reads as padding.
+ */
+function MetricsField({ defaultValue, error }: { defaultValue: Metric[]; error?: string }) {
+  const [items, setItems] = useState<Metric[]>(defaultValue);
+
+  const update = (index: number, patch: Partial<Metric>) =>
+    setItems((current) =>
+      current.map((entry, i) => (i === index ? { ...entry, ...patch } : entry)),
+    );
+
+  return (
+    <div>
+      <span className="mb-1.5 block text-[13px] font-medium">Impact metrics</span>
+      <input type="hidden" name="metrics" value={JSON.stringify(items)} />
+
+      {items.length > 0 ? (
+        <ul className="mb-3 space-y-2">
+          {items.map((item, index) => (
+            <li key={index} className="flex items-center gap-2">
+              <input
+                type="text"
+                value={item.value}
+                maxLength={24}
+                placeholder="40%"
+                aria-label={`Metric ${index + 1} value`}
+                onChange={(event) => update(index, { value: event.target.value })}
+                className="border-border-base bg-bg focus:border-accent w-28 shrink-0 rounded-md border px-2.5 py-1.5 font-mono text-[13px] focus:outline-none"
+              />
+              <input
+                type="text"
+                value={item.label}
+                maxLength={40}
+                placeholder="faster cold starts"
+                aria-label={`Metric ${index + 1} label`}
+                onChange={(event) => update(index, { label: event.target.value })}
+                className="border-border-base bg-bg focus:border-accent min-w-0 flex-1 rounded-md border px-2.5 py-1.5 text-[13px] focus:outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => setItems((current) => current.filter((_, i) => i !== index))}
+                aria-label={`Remove metric ${index + 1}`}
+                className="text-danger hover:bg-danger-soft shrink-0 rounded-md px-2 py-1 text-[13px] font-medium"
+              >
+                Remove
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
+      {items.length < MAX_METRICS ? (
+        <button
+          type="button"
+          onClick={() => setItems((current) => [...current, { value: "", label: "" }])}
+          className="border-border-base bg-bg hover:border-border-strong hover:bg-bg-subtle inline-flex h-9 items-center rounded-lg border px-3 text-[13px] font-medium"
+        >
+          Add metric
+        </button>
+      ) : null}
+
+      {error ? (
+        <p className="text-danger mt-1.5 text-[13px]">{error}</p>
+      ) : (
+        <p className="text-fg-subtle mt-1.5 text-[13px]">
+          Up to three. A short value (&ldquo;12k req/s&rdquo;) and what it measures. Blank rows are
+          dropped on save.
+        </p>
+      )}
+    </div>
+  );
+}
 
 /**
  * A repeatable list of screenshots serialised into one hidden JSON field, so

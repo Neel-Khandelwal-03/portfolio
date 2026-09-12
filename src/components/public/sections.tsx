@@ -1,10 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { MetricRow } from "@/components/public/project-metrics";
 import { ProjectVisual } from "@/components/public/project-visual";
 import { SkillGlobe } from "@/components/public/skill-globe";
 import { Tilt } from "@/components/public/tilt";
 import { TrackedLink } from "@/components/public/tracked-link";
+import { TransitionLink } from "@/components/public/transition-link";
 import { Container, EmptyState, Eyebrow, Prose, Section, TechChip } from "@/components/ui";
 import {
   ArrowRightIcon,
@@ -322,8 +324,8 @@ function FeatureBlock({ project, index }: { project: Project; index: number }) {
   const flipped = index % 2 === 1;
 
   return (
-    <article className="reveal group grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
-      <Link
+    <article data-project className="reveal group grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
+      <TransitionLink
         href={`/projects/${project.slug}`}
         aria-label={`${project.title} — read more`}
         className={cn("block focus-visible:outline-none", flipped ? "lg:order-2" : "lg:order-1")}
@@ -340,7 +342,7 @@ function FeatureBlock({ project, index }: { project: Project; index: number }) {
             />
           </Tilt>
         </div>
-      </Link>
+      </TransitionLink>
 
       <div className={flipped ? "lg:order-1" : "lg:order-2"}>
         <p className="label text-fg-subtle flex items-center gap-2">
@@ -350,17 +352,19 @@ function FeatureBlock({ project, index }: { project: Project; index: number }) {
         </p>
 
         <h3 className="text-title mt-4 font-semibold">
-          <Link
+          <TransitionLink
             href={`/projects/${project.slug}`}
             className="group-hover:text-accent transition-colors duration-200"
           >
-            {project.title}
-          </Link>
+            <span data-vt-title>{project.title}</span>
+          </TransitionLink>
         </h3>
 
         {project.summary ? (
           <p className="text-fg-muted text-lead mt-4 max-w-xl">{project.summary}</p>
         ) : null}
+
+        <MetricRow metrics={project.metrics} className="mt-7" />
 
         {project.technologies.length > 0 ? (
           <ul className="mt-6 flex flex-wrap gap-1.5">
@@ -373,7 +377,7 @@ function FeatureBlock({ project, index }: { project: Project; index: number }) {
         ) : null}
 
         <div className="mt-8 flex flex-wrap items-center gap-3">
-          <Link
+          <TransitionLink
             href={`/projects/${project.slug}`}
             className="group/cta border-border-base bg-bg-raised text-fg hover:border-border-strong hover:bg-bg-subtle inline-flex h-11 items-center gap-2 rounded-full border px-5 text-sm font-medium transition-colors duration-200"
           >
@@ -383,7 +387,7 @@ function FeatureBlock({ project, index }: { project: Project; index: number }) {
               height={14}
               className="transition-transform duration-200 group-hover/cta:translate-x-1"
             />
-          </Link>
+          </TransitionLink>
 
           {live ? (
             <TrackedLink
@@ -431,7 +435,10 @@ export function ProjectCard({
 
   return (
     <Tilt className="rounded-card h-full">
-      <article className="group border-border-base bg-bg-raised rounded-card hover:border-border-strong hover:shadow-raised relative flex h-full flex-col overflow-hidden border transition-all duration-300">
+      <article
+        data-project
+        className="group border-border-base bg-bg-raised rounded-card hover:border-border-strong hover:shadow-raised relative flex h-full flex-col overflow-hidden border transition-all duration-300"
+      >
         <ProjectVisual
           project={project}
           priority={priority}
@@ -443,12 +450,12 @@ export function ProjectCard({
           <p className="label text-fg-subtle/70">{project.category}</p>
 
           <h3 className="mt-3 text-[17px] font-semibold">
-            <Link
+            <TransitionLink
               href={`/projects/${project.slug}`}
               className="group-hover:text-accent transition-colors duration-200 after:absolute after:inset-0"
             >
-              {project.title}
-            </Link>
+              <span data-vt-title>{project.title}</span>
+            </TransitionLink>
           </h3>
 
           {project.summary ? (

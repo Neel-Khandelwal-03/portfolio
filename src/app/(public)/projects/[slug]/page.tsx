@@ -3,12 +3,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { CaseStudyNav, type CaseStudySection } from "@/components/public/case-study-nav";
+import { MetricBand } from "@/components/public/project-metrics";
 import { ProjectVisual } from "@/components/public/project-visual";
 import { TrackedLink } from "@/components/public/tracked-link";
-import { Container, Eyebrow, TechChip } from "@/components/ui";
+import { TransitionLink } from "@/components/public/transition-link";
+import { Container, Eyebrow, Prose, TechChip } from "@/components/ui";
 import { ArrowLeftIcon, ArrowRightIcon, ExternalLinkIcon, GitHubIcon } from "@/components/ui/icons";
 import { siteUrl } from "@/lib/env";
-import { formatDateRange, safeUrl } from "@/lib/utils";
+import { cn, formatDateRange, safeUrl } from "@/lib/utils";
 import {
   getProjectBySlug,
   getPublishedProjects,
@@ -73,6 +76,21 @@ export default async function ProjectPage({ params }: Params) {
   const live = safeUrl(project.liveUrl);
   const dates = formatDateRange(project.startDate, project.endDate, "Ongoing");
 
+  // The case study is assembled from whichever sections have been written. An
+  // older project with only a description still renders as a single Overview,
+  // and the contents rail never lists a heading that is not on the page.
+  const body = [
+    { id: "overview", label: "Overview", text: project.description },
+    { id: "problem", label: "Problem", text: project.problem },
+    { id: "approach", label: "Approach", text: project.approach },
+    { id: "architecture", label: "Architecture", text: project.architecture },
+    { id: "results", label: "Results", text: project.results },
+    { id: "learned", label: "What I learned", text: project.learned },
+  ].filter((section) => section.text.trim().length > 0);
+
+  const contents: CaseStudySection[] = body.map(({ id, label }) => ({ id, label }));
+  if (project.screenshots.length > 0) contents.push({ id: "screens", label: "Screens" });
+
   // Sibling navigation, so a reader can move through the work without
   // returning to the index first.
   const all = await getPublishedProjects();
@@ -116,7 +134,12 @@ export default async function ProjectPage({ params }: Params) {
             <div>
               <Eyebrow>{project.category}</Eyebrow>
 
-              <h1 className="text-title mt-5 font-semibold">{project.title}</h1>
+              <h1
+                className="text-title mt-5 font-semibold"
+                style={{ viewTransitionName: "project-title" }}
+              >
+                {project.title}
+              </h1>
 
               {project.summary ? (
                 <p className="text-fg-muted text-lead mt-5 max-w-2xl">{project.summary}</p>
@@ -177,21 +200,27 @@ export default async function ProjectPage({ params }: Params) {
 
       {/* ------------------------------------------------------------- cover */}
       <Container>
+        {/* Paired with the card that was clicked to get here. */}
         <ProjectVisual
           project={project}
           priority
+          viewTransitionName="project-media"
           className="aspect-[16/9] sm:aspect-[2/1]"
           sizes="(max-width: 1152px) 100vw, 1088px"
         />
+
+        <MetricBand metrics={project.metrics} className="mt-8" />
       </Container>
 
       {/* -------------------------------------------------------------- body */}
       <Container className="mt-16">
-        <div className="grid gap-12 lg:grid-cols-[minmax(0,180px)_minmax(0,1fr)] lg:gap-16">
-          {/* Sticky metadata rail */}
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,190px)_minmax(0,1fr)] lg:gap-16">
+          {/* Sticky rail: where you are, and what it was built with */}
           <aside className="lg:sticky lg:top-28 lg:self-start">
+            <CaseStudyNav sections={contents} />
+
             {project.technologies.length > 0 ? (
-              <>
+              <div className={contents.length > 1 ? "mt-10" : ""}>
                 <p className="label text-fg-subtle">Built with</p>
                 <ul className="mt-4 flex flex-wrap gap-1.5">
                   {project.technologies.map((tech) => (
@@ -200,33 +229,34 @@ export default async function ProjectPage({ params }: Params) {
                     </li>
                   ))}
                 </ul>
-              </>
+              </div>
             ) : null}
           </aside>
 
           <div className="min-w-0">
-            {project.description ? (
-              <section aria-labelledby="overview-heading">
-                <h2 id="overview-heading" className="text-subtitle font-semibold">
-                  Overview
+            {body.map((section, index) => (
+              <section
+                key={section.id}
+                id={section.id}
+                aria-labelledby={`${section.id}-heading`}
+                className={cn("scroll-mt-28", index > 0 && "mt-16")}
+              >
+                <h2 id={`${section.id}-heading`} className="text-subtitle font-semibold">
+                  {section.label}
                 </h2>
                 {/* Stored plain text, rendered as text — never as HTML. */}
-                <div className="text-fg-muted text-lead mt-6 max-w-2xl space-y-5">
-                  {project.description
-                    .split(/\n\s*\n/)
-                    .map((p) => p.trim())
-                    .filter(Boolean)
-                    .map((paragraph, index) => (
-                      <p key={index}>{paragraph}</p>
-                    ))}
-                </div>
+                <Prose text={section.text} className="mt-6 max-w-2xl" />
               </section>
-            ) : null}
+            ))}
 
             {project.screenshots.length > 0 ? (
-              <section aria-labelledby="screens-heading" className="mt-16">
+              <section
+                id="screens"
+                aria-labelledby="screens-heading"
+                className={cn("scroll-mt-28", body.length > 0 && "mt-16")}
+              >
                 <h2 id="screens-heading" className="text-subtitle font-semibold">
-                  Screenshots
+                  Screens
                 </h2>
                 <div className="mt-6 space-y-8">
                   {project.screenshots.map((shot, index) => {
@@ -263,7 +293,7 @@ export default async function ProjectPage({ params }: Params) {
       {/* --------------------------------------------------------- next work */}
       {next && next.id !== project.id ? (
         <Container className="mt-24">
-          <Link
+          <TransitionLink
             href={`/projects/${next.slug}`}
             className="group border-border-base bg-bg-raised rounded-panel hover:border-border-strong flex flex-wrap items-center gap-6 border p-6 transition-colors duration-300 sm:p-8"
           >
@@ -281,7 +311,7 @@ export default async function ProjectPage({ params }: Params) {
               height={22}
               className="text-fg-subtle group-hover:text-accent shrink-0 transition-all duration-200 group-hover:translate-x-1"
             />
-          </Link>
+          </TransitionLink>
         </Container>
       ) : null}
 
