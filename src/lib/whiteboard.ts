@@ -158,6 +158,8 @@ const FONT_SIZE = 17;
 /** Average advance of the marker face at 17px, used to size boxes to text. */
 const CHAR_WIDTH = 8.3;
 const MAX_CHARS_PER_LINE = 16;
+/** Average advance of the marker face at the 14px used for arrow labels. */
+const LABEL_CHAR_WIDTH = 7;
 
 export type SketchStroke = {
   d: string;
@@ -494,9 +496,23 @@ export function sketchWhiteboard(board: Whiteboard, seedKey: string, variant = 0
     }
 
     if (edge.label) {
+      // A label wider than the visible stretch of its arrow would sit on the
+      // boxes at either end. Lift it clear of them, over the gap instead. Only
+      // arrows running along a row or column need this; a diagonal arrow joins
+      // boxes that are already offset from each other.
+      const visible = Math.hypot(end.x - start.x, end.y - start.y);
+      const reach = (box: Bounds) => Math.abs(nx) * box.halfWidth + Math.abs(ny) * box.halfHeight;
+      const offset =
+        !detour &&
+        Math.max(Math.abs(nx), Math.abs(ny)) > 0.94 &&
+        edge.label.length * LABEL_CHAR_WIDTH + 12 > visible
+          ? Math.max(reach(a), reach(b)) + 12
+          : 13;
+      if (offset > 13) extent.top = Math.min(extent.top, midY + ny * offset - 14);
+
       labels.push({
-        x: round(midX + nx * 13),
-        y: round(midY + ny * 13),
+        x: round(midX + nx * offset),
+        y: round(midY + ny * offset),
         lines: [edge.label],
         tone: "blue",
         size: 14,
