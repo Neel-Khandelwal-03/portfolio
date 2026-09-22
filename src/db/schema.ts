@@ -147,6 +147,27 @@ export type Screenshot = { url: string; caption?: string };
 /** A measured outcome, e.g. `{ value: "42→11 min", label: "nightly runtime" }`. */
 export type ProjectMetric = { value: string; label: string };
 
+/**
+ * A hand-drawn system diagram for a project. Boxes sit on a coarse grid
+ * (`col`, `row`) rather than at free pixel positions, so a board stays legible
+ * however it is edited and lays out identically everywhere it is drawn.
+ */
+export type WhiteboardNode = {
+  id: string;
+  label: string;
+  kind: "box" | "store" | "note";
+  tone: "ink" | "blue" | "red" | "green";
+  col: number;
+  row: number;
+};
+export type WhiteboardEdge = { from: string; to: string; label: string; dashed: boolean };
+export type Whiteboard = {
+  title: string;
+  caption: string;
+  nodes: WhiteboardNode[];
+  edges: WhiteboardEdge[];
+};
+
 export const projects = pgTable(
   "projects",
   {
@@ -175,6 +196,8 @@ export const projects = pgTable(
     architecture: text("architecture").notNull().default(""),
     results: text("results").notNull().default(""),
     learned: text("learned").notNull().default(""),
+    // Null means the project has no whiteboard; the case study hides the option.
+    whiteboard: jsonb("whiteboard").$type<Whiteboard>(),
     isFeatured: boolean("is_featured").notNull().default(false),
     isPublished: boolean("is_published").notNull().default(true),
     startDate: date("start_date"),

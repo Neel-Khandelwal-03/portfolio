@@ -17,7 +17,9 @@ import {
 } from "@/components/admin/form";
 import { IDLE, type ActionState } from "@/lib/action-state";
 import { slugify } from "@/lib/validation";
-import type { Project } from "@/db/schema";
+import type { Project, Whiteboard } from "@/db/schema";
+
+import { WhiteboardField } from "./whiteboard-field";
 
 const CATEGORIES = [
   "Full-Stack",
@@ -258,6 +260,17 @@ export function ProjectForm({ project }: { project?: Project }) {
           />
         </FormSection>
 
+        <FormSection
+          title="Whiteboard"
+          description="Optional. A hand-drawn diagram of how the project fits together, opened from the case study. Remove it here to take it off."
+        >
+          <WhiteboardField
+            defaultValue={whiteboardFrom(prior?.whiteboard, project?.whiteboard ?? null)}
+            seedKey={slug || "draft"}
+            error={errors.whiteboard}
+          />
+        </FormSection>
+
         <FormSection title="Visibility">
           <CheckboxField
             name="isPublished"
@@ -305,6 +318,23 @@ function jsonField<T>(raw: string | undefined, fallback: T[]): T[] {
   try {
     const parsed: unknown = JSON.parse(raw);
     return Array.isArray(parsed) ? (parsed as T[]) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+/**
+ * The same restore for the whiteboard, which is one object rather than a list.
+ * An empty echo means it had been removed before the rejected save.
+ */
+function whiteboardFrom(raw: string | undefined, fallback: Whiteboard | null): Whiteboard | null {
+  if (raw == null) return fallback;
+  if (!raw.trim()) return null;
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+      ? (parsed as Whiteboard)
+      : fallback;
   } catch {
     return fallback;
   }

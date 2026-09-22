@@ -608,6 +608,80 @@
 }
 
 /* ========================================================================== */
+/* Whiteboards                                                                 */
+/* ========================================================================== */
+
+/*
+ * A whiteboard stays a whiteboard in both themes. The marker colours are tuned
+ * for a light board, and a dark "whiteboard" would be a second, worse design
+ * rather than the same object. Layered as components so a utility on a
+ * particular instance (the thumbnail's border-0) still wins.
+ */
+@layer components {
+  .whiteboard-surface {
+    --wb-surface: #fafaf6;
+    --wb-ink: #1e1f23;
+    --wb-blue: #1c55c4;
+    --wb-red: #c4382b;
+    --wb-green: #15804a;
+    color-scheme: light;
+    background-color: var(--wb-surface);
+    border: 1px solid color-mix(in srgb, var(--wb-ink) 14%, transparent);
+  }
+
+  /* Arrow labels sit on top of lines; knock the line out behind the letters. */
+  .whiteboard-halo {
+    paint-order: stroke;
+    stroke: var(--wb-surface);
+    stroke-width: 6px;
+    stroke-linejoin: round;
+  }
+
+  .whiteboard-dialog {
+    width: min(1180px, calc(100vw - 2rem));
+    max-width: none;
+    max-height: calc(100dvh - 2rem);
+    margin: auto;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-panel);
+    background: var(--bg-raised);
+    color: var(--fg);
+  }
+
+  .whiteboard-dialog > div {
+    max-height: calc(100dvh - 2rem);
+  }
+
+  .whiteboard-dialog::backdrop {
+    background: rgb(5 7 10 / 0.6);
+  }
+
+  .whiteboard-dialog[open] {
+    animation: whiteboard-open 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+}
+
+/* The page behind a modal should not scroll under the reader's wheel. */
+html:has(.whiteboard-dialog[open]) {
+  overflow: hidden;
+}
+
+@keyframes whiteboard-open {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .whiteboard-dialog[open] {
+    animation: none;
+  }
+}
+
+/* ========================================================================== */
 /* View transitions — a card becomes the page it opens                         */
 /* ========================================================================== */
 

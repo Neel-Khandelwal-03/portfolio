@@ -1,5 +1,12 @@
 import { z } from "zod";
 
+import {
+  WHITEBOARD_KINDS,
+  WHITEBOARD_LIMITS,
+  WHITEBOARD_TONES,
+  whiteboardProblems,
+} from "@/lib/whiteboard";
+
 /* -------------------------------------------------------------------------- */
 /* Reusable primitives                                                         */
 /* -------------------------------------------------------------------------- */
@@ -253,6 +260,91 @@ const jsonRows = <S extends z.ZodType>(row: S, max: number, tooMany: string) =>
 /** A case-study prose block. Blank means "do not render this section". */
 const caseStudyText = z.string().trim().max(6000).default("");
 
+const whiteboardNodeSchema = z.object({
+  id: z
+    .string()
+    .trim()
+    .regex(/^[a-z0-9-]{1,16}$/, "A box has an invalid id."),
+  label: z
+    .string()
+    .trim()
+    .min(1, "Every box needs a label.")
+    .max(WHITEBOARD_LIMITS.label, `Keep box labels to ${WHITEBOARD_LIMITS.label} characters.`),
+  kind: z.enum(WHITEBOARD_KINDS).default("box"),
+  tone: z.enum(WHITEBOARD_TONES).default("ink"),
+  col: z
+    .number()
+    .int()
+    .min(0)
+    .max(WHITEBOARD_LIMITS.cols - 1, `Boxes go in columns 1 to ${WHITEBOARD_LIMITS.cols}.`),
+  row: z
+    .number()
+    .int()
+    .min(0)
+    .max(WHITEBOARD_LIMITS.rows - 1, `Boxes go in rows 1 to ${WHITEBOARD_LIMITS.rows}.`),
+});
+
+const whiteboardEdgeSchema = z.object({
+  from: z.string().trim().min(1, "Every arrow needs a starting box."),
+  to: z.string().trim().min(1, "Every arrow needs an end box."),
+  label: z
+    .string()
+    .trim()
+    .max(
+      WHITEBOARD_LIMITS.edgeLabel,
+      `Keep arrow labels to ${WHITEBOARD_LIMITS.edgeLabel} characters.`,
+    )
+    .default(""),
+  dashed: z.boolean().default(false),
+});
+
+export const whiteboardSchema = z
+  .object({
+    title: z
+      .string()
+      .trim()
+      .min(1, "Give the whiteboard a title.")
+      .max(WHITEBOARD_LIMITS.title, `Keep the title to ${WHITEBOARD_LIMITS.title} characters.`),
+    caption: z
+      .string()
+      .trim()
+      .max(
+        WHITEBOARD_LIMITS.caption,
+        `Keep the caption to ${WHITEBOARD_LIMITS.caption} characters.`,
+      )
+      .default(""),
+    nodes: z
+      .array(whiteboardNodeSchema)
+      .min(1, "Add at least one box, or remove the whiteboard.")
+      .max(WHITEBOARD_LIMITS.nodes, `A whiteboard holds ${WHITEBOARD_LIMITS.nodes} boxes at most.`),
+    edges: z
+      .array(whiteboardEdgeSchema)
+      .max(WHITEBOARD_LIMITS.edges, `A whiteboard holds ${WHITEBOARD_LIMITS.edges} arrows at most.`)
+      .default([]),
+  })
+  .superRefine((board, ctx) => {
+    for (const message of whiteboardProblems(board)) ctx.addIssue({ code: "custom", message });
+  });
+
+/**
+ * The whiteboard travels as one hidden JSON input. An empty value means "no
+ * whiteboard" — that is how the editor's Remove button reaches the database.
+ */
+const optionalWhiteboard = z
+  .union([z.string(), z.record(z.string(), z.unknown())])
+  .nullish()
+  .transform((value): unknown => {
+    if (value == null) return null;
+    if (typeof value !== "string") return value;
+    if (!value.trim()) return null;
+    try {
+      return JSON.parse(value);
+    } catch {
+      return value;
+    }
+  })
+  .pipe(whiteboardSchema.nullable());
+
 export const projectSchema = z
   .object({
     title: z.string().trim().min(1, "Title is required").max(200),
@@ -283,6 +375,7 @@ export const projectSchema = z
     architecture: caseStudyText,
     results: caseStudyText,
     learned: caseStudyText,
+    whiteboard: optionalWhiteboard,
     isFeatured: checkbox,
     isPublished: checkbox,
     startDate: optionalDate,

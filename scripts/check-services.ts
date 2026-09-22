@@ -1,6 +1,9 @@
 import "./load-env";
 
 import { sql } from "@/db";
+import { fieldErrorsFrom } from "@/lib/action-state";
+import { projectSchema } from "@/lib/validation";
+import { sketchWhiteboard, webAppWhiteboard } from "@/lib/whiteboard";
 import * as svc from "@/services/portfolio";
 import * as t from "@/db/schema";
 
@@ -10,6 +13,28 @@ import * as t from "@/db/schema";
  *
  * Run with `npx tsx scripts/check-services.ts`.
  */
+
+// This suite creates, reorders and deletes real rows. Pointed at the live
+// database by mistake it would shuffle the published project order, so it
+// refuses anything but a local server unless told otherwise explicitly.
+const databaseHost = (() => {
+  try {
+    return new URL(process.env.DATABASE_URL ?? "").hostname;
+  } catch {
+    return "";
+  }
+})();
+if (
+  !["localhost", "127.0.0.1", "::1"].includes(databaseHost) &&
+  process.env.ALLOW_REMOTE_DB_CHECKS !== "1"
+) {
+  console.error(
+    `Refusing to run against ${databaseHost || "an unknown host"}: these checks write to the ` +
+      "database. Point DATABASE_URL at a local or branch database, or set " +
+      "ALLOW_REMOTE_DB_CHECKS=1 if this really is a disposable copy.",
+  );
+  process.exit(1);
+}
 
 let failures = 0;
 
@@ -75,6 +100,92 @@ async function main() {
 
   const byId = await svc.getProjectById(created.id);
   check("read back by id", byId?.id === created.id);
+
+  console.log("\nWhiteboard");
+  check("a new project has no whiteboard", created.whiteboard === null, created.whiteboard);
+
+  // Submitted exactly as the admin form sends it: one hidden JSON field.
+  const form = { title: "Smoke", category: "Web", screenshots: "" };
+  const board = webAppWhiteboard();
+  const accepted = projectSchema.safeParse({ ...form, whiteboard: JSON.stringify(board) });
+  check("a valid board passes validation", accepted.success, !accepted.success && accepted.error);
+
+  if (accepted.success) {
+    const saved = await svc.updateProject(created.id, { whiteboard: accepted.data.whiteboard });
+    check(
+      "whiteboard round-trips through the database",
+      saved?.whiteboard?.nodes.length === 3 && saved.whiteboard.edges[1]?.label === "queries",
+      saved?.whiteboard,
+    );
+  }
+
+  const cleared = projectSchema.safeParse({ ...form, whiteboard: "" });
+  check("an empty field means no whiteboard", cleared.success && cleared.data.whiteboard === null);
+  if (cleared.success) {
+    const removed = await svc.updateProject(created.id, { whiteboard: cleared.data.whiteboard });
+    check("removing a whiteboard clears the column", removed?.whiteboard === null);
+  }
+
+  const rejects = (label: string, value: unknown, expected: RegExp) => {
+    const result = projectSchema.safeParse({ ...form, whiteboard: JSON.stringify(value) });
+    const message = result.success ? "" : (fieldErrorsFrom(result.error).whiteboard ?? "");
+    check(label, expected.test(message), message || "accepted");
+  };
+  rejects(
+    "two boxes in one cell are rejected by name",
+    { ...board, nodes: [...board.nodes, { ...board.nodes[0], id: "n9", label: "Cache" }] },
+    /"Browser" and "Cache" are both in column 1, row 1/,
+  );
+  rejects(
+    "an arrow to a missing box is rejected",
+    { ...board, edges: [...board.edges, { from: "n1", to: "n42", label: "", dashed: false }] },
+    /no longer exists/,
+  );
+  rejects(
+    "a blank box label is rejected",
+    { ...board, nodes: [{ ...board.nodes[0], label: "  " }, ...board.nodes.slice(1)] },
+    /needs a label/,
+  );
+  rejects(
+    "a board without boxes is rejected",
+    { ...board, nodes: [], edges: [] },
+    /at least one box/,
+  );
+
+  const sketch = sketchWhiteboard(board, "smoke");
+  check(
+    "sketches are deterministic for server and browser",
+    JSON.stringify(sketch) === JSON.stringify(sketchWhiteboard(board, "smoke")),
+  );
+  // Browser → Database skips the API box that sits between them in the same row.
+  const skipping = {
+    ...board,
+    edges: [...board.edges, { from: "n1", to: "n3", label: "", dashed: false }],
+  };
+  const routed = sketchWhiteboard(skipping, "smoke").strokes.filter(
+    (stroke) => stroke.order === skipping.nodes.length + 2,
+  )[0];
+  const straight = sketchWhiteboard(skipping, "smoke").strokes.filter(
+    (stroke) => stroke.order === skipping.nodes.length,
+  )[0];
+  const controlY = (d: string | undefined) => Number(/Q[-\d.]+,([-\d.]+)/.exec(d ?? "")?.[1]);
+  const rowCentre = 26 + 124 / 2;
+  check(
+    "an arrow that would cross a box bows around it",
+    controlY(routed?.d) < rowCentre - 40,
+    routed?.d,
+  );
+  check(
+    "an arrow between neighbours stays straight",
+    Math.abs(controlY(straight?.d) - rowCentre) < 12,
+    straight?.d,
+  );
+
+  check(
+    "sketch again changes the hand, not the layout",
+    sketch.strokes[0]?.d !== sketchWhiteboard(board, "smoke", 1).strokes[0]?.d &&
+      sketch.width === sketchWhiteboard(board, "smoke", 1).width,
+  );
 
   console.log("\nOrdering");
   const before = (await svc.listProjectsForAdmin()).map((p) => p.id);

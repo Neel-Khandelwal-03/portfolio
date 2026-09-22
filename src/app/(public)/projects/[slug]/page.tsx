@@ -9,9 +9,17 @@ import { ProjectVisual } from "@/components/public/project-visual";
 import { TrackedLink } from "@/components/public/tracked-link";
 import { TransitionLink } from "@/components/public/transition-link";
 import { Container, Eyebrow, Prose, TechChip } from "@/components/ui";
-import { ArrowLeftIcon, ArrowRightIcon, ExternalLinkIcon, GitHubIcon } from "@/components/ui/icons";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  EditIcon,
+  ExternalLinkIcon,
+  GitHubIcon,
+} from "@/components/ui/icons";
+import { WhiteboardDialog, WhiteboardOpenButton } from "@/components/whiteboard/whiteboard-dialog";
+import { WhiteboardSketch } from "@/components/whiteboard/whiteboard-sketch";
 import { siteUrl } from "@/lib/env";
-import { cn, formatDateRange, safeUrl } from "@/lib/utils";
+import { formatDateRange, safeUrl } from "@/lib/utils";
 import {
   getProjectBySlug,
   getPublishedProjects,
@@ -88,8 +96,30 @@ export default async function ProjectPage({ params }: Params) {
     { id: "learned", label: "What I learned", text: project.learned },
   ].filter((section) => section.text.trim().length > 0);
 
+  // The whiteboard reads best straight after the prose that explains how the
+  // system works, and before the sections about how it turned out.
+  const whiteboard = project.whiteboard;
+  const outcome = body.findIndex((section) => section.id === "results" || section.id === "learned");
+  const whiteboardAt = whiteboard && outcome !== -1 ? outcome : body.length;
+
   const contents: CaseStudySection[] = body.map(({ id, label }) => ({ id, label }));
+  if (whiteboard) contents.splice(whiteboardAt, 0, { id: "whiteboard", label: "Whiteboard" });
   if (project.screenshots.length > 0) contents.push({ id: "screens", label: "Screens" });
+
+  const renderSection = (section: (typeof body)[number]) => (
+    <section
+      key={section.id}
+      id={section.id}
+      aria-labelledby={`${section.id}-heading`}
+      className="scroll-mt-28"
+    >
+      <h2 id={`${section.id}-heading`} className="text-subtitle font-semibold">
+        {section.label}
+      </h2>
+      {/* Stored plain text, rendered as text — never as HTML. */}
+      <Prose text={section.text} className="mt-6 max-w-2xl" />
+    </section>
+  );
 
   // Sibling navigation, so a reader can move through the work without
   // returning to the index first.
@@ -172,6 +202,12 @@ export default async function ProjectPage({ params }: Params) {
                     Source code
                   </TrackedLink>
                 ) : null}
+                {whiteboard ? (
+                  <WhiteboardOpenButton className="border-border-base bg-bg-raised text-fg hover:border-border-strong hover:bg-bg-subtle inline-flex h-12 items-center gap-2 rounded-full border px-6 text-[15px] font-medium transition-colors duration-200">
+                    <EditIcon width={15} height={15} />
+                    View whiteboard
+                  </WhiteboardOpenButton>
+                ) : null}
               </div>
             </div>
 
@@ -233,28 +269,57 @@ export default async function ProjectPage({ params }: Params) {
             ) : null}
           </aside>
 
-          <div className="min-w-0">
-            {body.map((section, index) => (
+          <div className="flex min-w-0 flex-col gap-16">
+            {body.slice(0, whiteboardAt).map(renderSection)}
+
+            {whiteboard ? (
               <section
-                key={section.id}
-                id={section.id}
-                aria-labelledby={`${section.id}-heading`}
-                className={cn("scroll-mt-28", index > 0 && "mt-16")}
+                id="whiteboard"
+                aria-labelledby="whiteboard-heading"
+                className="scroll-mt-28"
               >
-                <h2 id={`${section.id}-heading`} className="text-subtitle font-semibold">
-                  {section.label}
+                <h2 id="whiteboard-heading" className="text-subtitle font-semibold">
+                  Whiteboard
                 </h2>
-                {/* Stored plain text, rendered as text — never as HTML. */}
-                <Prose text={section.text} className="mt-6 max-w-2xl" />
+                {whiteboard.caption ? (
+                  <p className="text-fg-muted text-lead mt-4 max-w-2xl">{whiteboard.caption}</p>
+                ) : null}
+
+                {/* Server-rendered, so the diagram is on the page before the viewer's script loads. */}
+                <WhiteboardOpenButton className="group border-border-base bg-bg-raised rounded-card hover:border-border-strong focus-visible:outline-accent mt-6 block w-full overflow-hidden border text-left transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-4">
+                  <span className="whiteboard-surface block border-0 p-4 sm:p-6">
+                    <WhiteboardSketch
+                      board={whiteboard}
+                      seedKey={project.slug}
+                      className="mx-auto block h-auto max-h-[360px] w-full"
+                    />
+                  </span>
+                  <span className="border-border-base flex flex-col items-start gap-2 border-t px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+                    <span className="min-w-0">
+                      <span className="block font-medium">{whiteboard.title}</span>
+                      <span className="text-fg-subtle font-mono text-[12px] tabular-nums">
+                        {whiteboard.nodes.length} {whiteboard.nodes.length === 1 ? "box" : "boxes"}{" "}
+                        · {whiteboard.edges.length}{" "}
+                        {whiteboard.edges.length === 1 ? "arrow" : "arrows"}
+                      </span>
+                    </span>
+                    <span className="text-accent inline-flex shrink-0 items-center gap-1.5 text-[13px] font-medium">
+                      Open whiteboard
+                      <ArrowRightIcon
+                        width={13}
+                        height={13}
+                        className="transition-transform duration-200 group-hover:translate-x-1"
+                      />
+                    </span>
+                  </span>
+                </WhiteboardOpenButton>
               </section>
-            ))}
+            ) : null}
+
+            {body.slice(whiteboardAt).map(renderSection)}
 
             {project.screenshots.length > 0 ? (
-              <section
-                id="screens"
-                aria-labelledby="screens-heading"
-                className={cn("scroll-mt-28", body.length > 0 && "mt-16")}
-              >
+              <section id="screens" aria-labelledby="screens-heading" className="scroll-mt-28">
                 <h2 id="screens-heading" className="text-subtitle font-semibold">
                   Screens
                 </h2>
@@ -314,6 +379,8 @@ export default async function ProjectPage({ params }: Params) {
           </TransitionLink>
         </Container>
       ) : null}
+
+      {whiteboard ? <WhiteboardDialog board={whiteboard} seedKey={project.slug} /> : null}
 
       <script
         type="application/ld+json"
