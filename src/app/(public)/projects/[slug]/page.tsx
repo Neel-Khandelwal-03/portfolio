@@ -62,14 +62,15 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
       title: project.title,
       description,
       url,
-      images: project.coverImageUrl ? [{ url: project.coverImageUrl }] : undefined,
+      // No `images` key: leaving it out lets the generated card in
+      // opengraph-image.tsx supply the picture, which carries the project's
+      // title, metrics and whiteboard rather than a bare screenshot.
       tags: project.technologies,
     },
     twitter: {
       card: "summary_large_image",
       title: project.title,
       description,
-      images: project.coverImageUrl ? [project.coverImageUrl] : undefined,
     },
   };
 }

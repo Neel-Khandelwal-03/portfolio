@@ -1,5 +1,6 @@
 import Image from "next/image";
 
+import { WhiteboardSketch } from "@/components/whiteboard/whiteboard-sketch";
 import { cn } from "@/lib/utils";
 import type { Project } from "@/db/schema";
 
@@ -46,11 +47,18 @@ export function ProjectVisual({
   className,
   sizes = "(max-width: 1024px) 100vw, 640px",
   viewTransitionName,
+  preferWhiteboard = false,
 }: {
   project: Project;
   priority?: boolean;
   className?: string;
   sizes?: string;
+  /**
+   * Show the project's whiteboard instead of the generated panel. Used on
+   * listings, where it is the only picture of the project; a case study draws
+   * the board full size further down the page and does not repeat it here.
+   */
+  preferWhiteboard?: boolean;
   /**
    * Set only where exactly one visual exists on the page (a case study). On
    * listings the name is applied to the clicked card by `TransitionLink`,
@@ -82,6 +90,31 @@ export function ProjectVisual({
           loading={priority ? undefined : "lazy"}
           className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
         />
+      </div>
+    );
+  }
+
+  if (preferWhiteboard && project.whiteboard) {
+    return (
+      <div
+        {...morph}
+        className={cn(
+          "border-border-base whiteboard-surface rounded-card relative overflow-hidden border",
+          className,
+        )}
+        aria-hidden
+      >
+        <WhiteboardSketch
+          board={project.whiteboard}
+          seedKey={project.slug}
+          className="absolute inset-0 h-full w-full p-3"
+        />
+        <span
+          className="absolute bottom-3 left-4 font-mono text-[10px] tracking-[0.12em] uppercase opacity-55"
+          style={{ color: "var(--wb-ink)" }}
+        >
+          Whiteboard
+        </span>
       </div>
     );
   }

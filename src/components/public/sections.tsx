@@ -337,6 +337,7 @@ function FeatureBlock({ project, index }: { project: Project; index: number }) {
             <ProjectVisual
               project={project}
               priority={index === 0}
+              preferWhiteboard
               className="group-hover:border-border-strong aspect-[16/10] transition-colors duration-300"
               sizes="(max-width: 1024px) 100vw, 560px"
             />
@@ -442,6 +443,7 @@ export function ProjectCard({
         <ProjectVisual
           project={project}
           priority={priority}
+          preferWhiteboard
           className="aspect-[16/10] rounded-none border-0 border-b"
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 420px"
         />
