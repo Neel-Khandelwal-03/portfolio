@@ -103,7 +103,7 @@ site.
 ### Prerequisites
 
 - Node.js 20+
-- A PostgreSQL 14+ database
+- A PostgreSQL 14+ database for development — see [the development database](#the-development-database)
 
 ### Setup
 
@@ -116,6 +116,42 @@ npm run dev
 ```
 
 The site is at `http://localhost:3000` and the dashboard at `http://localhost:3000/admin`.
+
+### The development database
+
+`DATABASE_URL` in `.env.local` must point at a **development** database, never at
+production. Everything local writes to it: `npm run db:migrate`, `npm run db:seed`,
+`npm run check:services` (which creates, reorders and deletes rows), and every save in
+the local dashboard.
+
+A container matching the production major version:
+
+```bash
+docker run -d --name portfolio-dev \
+  -e POSTGRES_USER=portfolio -e POSTGRES_PASSWORD=devpassword -e POSTGRES_DB=portfolio_dev \
+  -p 55432:5432 -v portfolio-dev-pg18:/var/lib/postgresql postgres:18-alpine
+```
+
+```
+DATABASE_URL=postgres://portfolio:devpassword@localhost:55432/portfolio_dev
+```
+
+Then `docker start portfolio-dev` before `npm run dev`, and `npm run db:migrate` to
+create the schema (or restore a snapshot, below).
+
+To develop against a copy of the real content, take a snapshot — excluding the session
+table, so live login tokens are never copied onto a laptop:
+
+```bash
+npx vercel env pull .env.vercel-pull.bak --environment=production
+pg_dump "<production url>" --no-owner --no-privileges \
+  --exclude-table-data=public.sessions --exclude-table-data=public.analytics_events \
+  > snapshot.sql
+docker exec -i portfolio-dev psql -U portfolio -d portfolio_dev -v ON_ERROR_STOP=1 < snapshot.sql
+```
+
+Production credentials live in Vercel and are pulled when needed; they are deliberately
+not kept in `.env.local`.
 
 Generate a secret with:
 
